@@ -1007,19 +1007,17 @@ const QUESTIONS = [
 ];
 
 /* ════════════════════════════════════════════════
-   STATE
+   STATO APPLICAZIONE
    ════════════════════════════════════════════════ */
-const state = {
-  userName:      '',
-  questions:     [],   // 30 domande estratte casualmente
-  currentIndex:  0,
-  answers:       [],   // { questionIndex, chosen, correct }
-  correctCount:  0,
-  wrongCount:    0,
-  timerInterval: null,
-  timeLeft:      45 * 60,
-  startTime:     null,
-  finished:      false
+const STATE = {
+  playerName:   '',
+  questions:    [],
+  current:      0,
+  answers:      [],
+  startTime:    null,
+  timerInterval:null,
+  totalSeconds: 45 * 60,
+  remaining:    45 * 60
 };
 
 /* ════════════════════════════════════════════════
@@ -1034,17 +1032,10 @@ function shuffle(arr) {
   return a;
 }
 
-function formatTime(sec) {
-  const m = String(Math.floor(sec / 60)).padStart(2, '0');
-  const s = String(sec % 60).padStart(2, '0');
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
-}
-
-function formatTimeTaken(sec) {
-  if (sec < 60) return `${sec}s`;
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return s > 0 ? `${m}m ${s}s` : `${m}m`;
 }
 
 function showSection(id) {
@@ -1053,27 +1044,121 @@ function showSection(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function toggleDisc(btn) {
+  const content = btn.nextElementSibling;
+  const isOpen  = content.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  btn.setAttribute('aria-expanded', String(!isOpen));
+  content.classList.toggle('open', !isOpen);
+}
+
+/* ════════════════════════════════════════════════
+   LEADERBOARD (localStorage)
+   ════════════════════════════════════════════════ */
+function getToday() {
+  return new Date().toLocaleDateString('it-IT');
+}
+
+function loadLeaderboard() {
+  try {
+    return JSON.parse(localStorage.getItem('ssl_quiz_lb') || '{"entries":[]}');
+  } catch { return { entries: [] }; }
+}
+
+function saveLeaderboard(lb) {
+  localStorage.setItem('ssl_quiz_lb', JSON.stringify(lb));
+}
+
+function saveResult(entry) {
+  const lb = loadLeaderboard();
+  lb.entries.push(entry);
+  lb.entries.sort((a, b) => b.score - a.score);
+  saveLeaderboard(lb);
+}
+
+function renderInlineLeaderboard(myScore) {
+  const container = document.getElementById('inline-leaderboard');
+  const lb        = loadLeaderboard();
+  const today     = getToday();
+  const entries   = lb.entries.filter(e => e.date === today).slice(0, 10);
+  const medals    = ['🥇', '🥈', '🥉'];
+
+  if (entries.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;text-align:center;">Nessun risultato oggi.</p>';
+    return;
+  }
+
+  container.innerHTML = entries.map((e, i) => {
+    const isMine = e.score === myScore && e.name === STATE.playerName;
+    const cls    = i === 0 ? 'lb-row gold' : i === 1 ? 'lb-row silver' : i === 2 ? 'lb-row bronze' : 'lb-row';
+    return `
+      <div class="${cls}${isMine ? ' mine' : ''}">
+        <span style="width:1.5rem;flex-shrink:0;font-size:0.85rem;font-weight:700;color:var(--muted)">
+          ${medals[i] || `#${i + 1}`}
+        </span>
+        <div style="flex:1;min-width:0">
+          <p style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            ${e.name}${isMine ? ' <span style="color:var(--accent2)">(tu)</span>' : ''}
+          </p>
+          <p style="font-size:0.75rem;color:var(--muted)">${e.raw}/30 · ${e.time}</p>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <p style="font-size:0.85rem;font-weight:700;color:var(--accent)">${e.score}pt</p>
+          <p style="font-size:0.7rem;color:${e.passed ? 'var(--success)' : 'var(--danger)'}">
+            ${e.passed ? '✅' : '❌'}
+          </p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════
+   TIMER
+   ════════════════════════════════════════════════ */
+function startTimer() {
+  const box     = document.getElementById('timer-box');
+  const display = document.getElementById('timer-display');
+  box.style.display = 'flex';
+  STATE.remaining = STATE.totalSeconds;
+
+  STATE.timerInterval = setInterval(() => {
+    STATE.remaining--;
+    display.textContent = formatTime(STATE.remaining);
+
+    box.classList.remove('warning', 'critical');
+    if (STATE.remaining <= 60)        box.classList.add('critical');
+    else if (STATE.remaining <= 300)  box.classList.add('warning');
+
+    if (STATE.remaining <= 0) {
+      clearInterval(STATE.timerInterval);
+      endQuiz(true);
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(STATE.timerInterval);
+  document.getElementById('timer-box').style.display = 'none';
+}
+
 /* ════════════════════════════════════════════════
    MODAL NOME
    ════════════════════════════════════════════════ */
 function openNameModal() {
-  document.getElementById('modal-name').style.display = 'flex';
+  document.getElementById('modal-name').style.display  = 'flex';
+  document.getElementById('input-name').value          = '';
+  document.getElementById('name-error').textContent    = '';
   setTimeout(() => document.getElementById('input-name').focus(), 100);
 }
 
 function confirmName() {
   const val = document.getElementById('input-name').value.trim();
-  const err = document.getElementById('name-error');
   if (val.length < 2) {
-    err.textContent = '⚠️ Inserisci almeno 2 caratteri.';
+    document.getElementById('name-error').textContent = '⚠️ Inserisci almeno 2 caratteri.';
     return;
   }
-  if (val.length > 40) {
-    err.textContent = '⚠️ Massimo 40 caratteri.';
-    return;
-  }
-  err.textContent = '';
-  state.userName = val;
+  STATE.playerName = val;
   document.getElementById('modal-name').style.display = 'none';
   startQuiz();
 }
@@ -1083,393 +1168,208 @@ document.getElementById('input-name').addEventListener('keydown', e => {
 });
 
 /* ════════════════════════════════════════════════
-   QUIZ — AVVIO
+   QUIZ CORE
    ════════════════════════════════════════════════ */
 function startQuiz() {
-  state.questions    = shuffle(QUESTIONS).slice(0, 30);
-  state.currentIndex = 0;
-  state.answers      = [];
-  state.correctCount = 0;
-  state.wrongCount   = 0;
-  state.timeLeft     = 45 * 60;
-  state.startTime    = Date.now();
-  state.finished     = false;
+  STATE.questions = shuffle(QUESTIONS).slice(0, 30);
+  STATE.current   = 0;
+  STATE.answers   = new Array(30).fill(null);
+  STATE.startTime = Date.now();
 
-  document.getElementById('timer-box').style.display = 'block';
-  startTimer();
   showSection('section-quiz');
+  startTimer();
   renderQuestion();
 }
 
-/* ════════════════════════════════════════════════
-   TIMER
-   ════════════════════════════════════════════════ */
-function startTimer() {
-  clearInterval(state.timerInterval);
-  updateTimerDisplay();
-  state.timerInterval = setInterval(() => {
-    state.timeLeft--;
-    updateTimerDisplay();
-    if (state.timeLeft <= 0) {
-      clearInterval(state.timerInterval);
-      finishQuiz(true);
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const box = document.getElementById('timer-box');
-  const disp = document.getElementById('timer-display');
-  disp.textContent = formatTime(state.timeLeft);
-  box.classList.remove('warning', 'critical');
-  if (state.timeLeft <= 300 && state.timeLeft > 60) box.classList.add('warning');
-  if (state.timeLeft <= 60) box.classList.add('critical');
-}
-
-/* ════════════════════════════════════════════════
-   RENDER DOMANDA
-   ════════════════════════════════════════════════ */
 function renderQuestion() {
-  const q   = state.questions[state.currentIndex];
-  const num = state.currentIndex + 1;
-  const tot = state.questions.length;
+  const q   = STATE.questions[STATE.current];
+  const idx = STATE.current;
+  const tot = STATE.questions.length;
 
-  // Progress
-  document.getElementById('q-counter').textContent = `Domanda ${num} di ${tot}`;
+  // Counter e progress
+  document.getElementById('q-counter').textContent = `Domanda ${idx + 1} di ${tot}`;
+  document.getElementById('progress-fill').style.width = `${((idx + 1) / tot) * 100}%`;
+
+  // Badge e testo
+  document.getElementById('q-number-badge').textContent = `Q ${String(idx + 1).padStart(2, '0')}`;
+  document.getElementById('q-text').textContent         = q.question;
+
+  // Score live
+  const correct = STATE.answers.filter((a, i) => a !== null && a === STATE.questions[i].correct).length;
   document.getElementById('q-score-live').innerHTML =
-    `<span style="color:var(--success)">✔ ${state.correctCount}</span>` +
-    ` &nbsp;/&nbsp; ` +
-    `<span style="color:var(--danger)">✘ ${state.wrongCount}</span>`;
-  document.getElementById('progress-fill').style.width =
-    `${((num - 1) / tot) * 100}%`;
+    `<span style="color:var(--success)">✓ ${correct}</span>` +
+    ` <span style="color:var(--muted)">/ ${idx}</span>`;
 
-  // Testo
-  document.getElementById('q-number-badge').textContent =
-    `Q ${String(num).padStart(2, '0')}`;
-  document.getElementById('q-text').textContent = q.question;
+  // Feedback reset
+  const fb = document.getElementById('feedback-box');
+  fb.style.display = 'none';
+  fb.textContent   = '';
 
   // Opzioni
   const container = document.getElementById('options-container');
   container.innerHTML = '';
-  q.options.forEach((opt, i) => {
+
+  q.options.forEach((opt, optIdx) => {
     const btn = document.createElement('button');
-    btn.className = 'option-btn fade-in';
-    btn.style.animationDelay = `${i * 0.06}s`;
-    btn.textContent = opt;
-    btn.setAttribute('aria-label', `Opzione ${i + 1}: ${opt}`);
-    btn.addEventListener('click', () => selectAnswer(i));
+    btn.className    = 'option-btn';
+    btn.textContent  = opt;
+    btn.setAttribute('aria-label', `Opzione ${optIdx + 1}: ${opt}`);
+
+    // Se già risposto
+    if (STATE.answers[idx] !== null) {
+      btn.disabled = true;
+      if (optIdx === q.correct)               btn.classList.add('correct');
+      if (optIdx === STATE.answers[idx] && optIdx !== q.correct) btn.classList.add('wrong');
+      showFeedback(q.explanation, STATE.answers[idx] === q.correct);
+    }
+
+    btn.addEventListener('click', () => answerQuestion(optIdx));
     container.appendChild(btn);
   });
-
-  // Feedback nascosto
-  const fb = document.getElementById('feedback-box');
-  fb.style.display = 'none';
-  fb.textContent   = '';
 }
 
-/* ════════════════════════════════════════════════
-   RISPOSTA
-   ════════════════════════════════════════════════ */
-function selectAnswer(chosenIndex) {
-  if (state.finished) return;
-
-  const q       = state.questions[state.currentIndex];
-  const isRight = chosenIndex === q.correct;
-  const buttons = document.querySelectorAll('.option-btn');
-
-  // Disabilita tutti
-  buttons.forEach(b => b.disabled = true);
+function answerQuestion(optIdx) {
+  const q   = STATE.questions[STATE.current];
+  STATE.answers[STATE.current] = optIdx;
 
   // Colora
-  buttons[q.correct].classList.add('correct');
-  if (!isRight) buttons[chosenIndex].classList.add('wrong');
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[q.correct].classList.add('correct');
+  if (optIdx !== q.correct) btns[optIdx].classList.add('wrong');
 
-  // Aggiorna stato
-  if (isRight) state.correctCount++;
-  else         state.wrongCount++;
+  showFeedback(q.explanation, optIdx === q.correct);
 
-  state.answers.push({
-    questionIndex: state.currentIndex,
-    chosen: chosenIndex,
-    correct: q.correct,
-    isRight
-  });
-
-  // Feedback spiegazione
-  const fb = document.getElementById('feedback-box');
-  fb.style.display = 'block';
-  fb.style.background    = isRight
-    ? 'rgba(16,185,129,0.1)'  : 'rgba(239,68,68,0.1)';
-  fb.style.border        = `1px solid ${isRight ? 'var(--success)' : 'var(--danger)'}`;
-  fb.style.color         = isRight ? '#6ee7b7' : '#fca5a5';
-  fb.innerHTML =
-    `<strong>${isRight ? '✅ Corretto!' : '❌ Errato!'}</strong><br/>` +
-    `<span style="color:var(--muted);font-size:0.85rem">${q.explanation}</span>`;
-
-  // Avanza automaticamente dopo 1.8s
+  // Avanza automaticamente dopo 2.2s
   setTimeout(() => {
-    if (state.currentIndex < state.questions.length - 1) {
-      state.currentIndex++;
+    if (STATE.current < STATE.questions.length - 1) {
+      STATE.current++;
       renderQuestion();
     } else {
-      finishQuiz(false);
+      endQuiz(false);
     }
-  }, 1800);
+  }, 2200);
+}
+
+function showFeedback(text, isCorrect) {
+  const fb = document.getElementById('feedback-box');
+  fb.style.display  = 'block';
+  fb.style.background   = isCorrect ? 'rgba(16,185,129,0.1)'  : 'rgba(239,68,68,0.1)';
+  fb.style.borderColor  = isCorrect ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)';
+  fb.style.border       = '1px solid';
+  fb.style.color        = isCorrect ? '#6ee7b7' : '#fca5a5';
+  fb.innerHTML = `<strong>${isCorrect ? '✅ Corretto!' : '❌ Errato.'}</strong> ${text}`;
 }
 
 /* ════════════════════════════════════════════════
    FINE QUIZ
    ════════════════════════════════════════════════ */
-function finishQuiz(timeExpired = false) {
-  if (state.finished) return;
-  state.finished = true;
-  clearInterval(state.timerInterval);
-  document.getElementById('timer-box').style.display = 'none';
+function endQuiz(timeout) {
+  stopTimer();
 
-  // Domande non risposte (timeout)
-  const unanswered = state.questions.length - state.answers.length;
+  const elapsed   = Math.round((Date.now() - STATE.startTime) / 1000);
+  const timeStr   = formatTime(elapsed);
+  const correct   = STATE.answers.filter((a, i) => a !== null && a === STATE.questions[i].correct).length;
+  const answered  = STATE.answers.filter(a => a !== null).length;
+  const pct       = Math.round((correct / 30) * 100);
+  const passed    = pct >= 70;
 
-  // Punteggio grezzo e percentuale
-  const rawScore = state.correctCount;
-  const pct      = Math.round((rawScore / 30) * 100);
-  const passed   = pct >= 70;
-
-  // Tempo impiegato
-  const timeTakenSec = Math.round((Date.now() - state.startTime) / 1000);
-  const timeTakenMin = Math.floor(timeTakenSec / 60);
-
-  // Moltiplicatore classifica
-  let multiplier;
-  if      (timeTakenMin < 15) multiplier = 3;
-  else if (timeTakenMin < 25) multiplier = 2;
-  else if (timeTakenMin < 35) multiplier = 1.5;
-  else                        multiplier = 1;
-
-  const leaderboardScore = Math.round(rawScore * multiplier * 10);
+  // Punteggio con moltiplicatore velocità
+  const mult      = elapsed < 900 ? 1.5 : elapsed < 1800 ? 1.2 : 1.0;
+  const score     = Math.round(correct * 10 * mult);
 
   // Salva in leaderboard
-  const lb       = loadLeaderboard();
-  const today    = new Date().toISOString().split('T')[0];
-  const entry    = {
-    name:     state.userName,
-    score:    leaderboardScore,
-    raw:      rawScore,
+  saveResult({
+    name:   STATE.playerName,
+    score,
+    raw:    correct,
     pct,
+    time:   timeStr,
+    mult,
     passed,
-    time:     timeTakenSec,
-    mult:     multiplier,
-    date:     today,
-    ts:       Date.now()
-  };
-  lb.entries.push(entry);
-  lb.entries.sort((a, b) => b.score - a.score);
-  saveLeaderboard(lb);
-
-  const position = lb.entries.findIndex(e => e.ts === entry.ts) + 1;
-
-  // Popola sezione risultati
-  document.getElementById('result-icon').textContent  = passed ? '🏆' : '📚';
-  document.getElementById('result-title').textContent = passed
-    ? 'Quiz Superato!' : 'Quiz Non Superato';
-  document.getElementById('result-title').style.color = passed
-    ? 'var(--success)' : 'var(--danger)';
-  document.getElementById('result-subtitle').textContent =
-    `Complimenti ${state.userName} — Ecco il tuo riepilogo`;
-
-  // Stats
-  const statsEl   = document.getElementById('result-stats');
-  const statsData = [
-    { label:'Corrette',     value:state.correctCount,        color:'var(--success)', icon:'✔' },
-    { label:'Errate',       value:state.wrongCount,          color:'var(--danger)',  icon:'✘' },
-    { label:'Non risposte', value:unanswered,                color:'var(--muted)',   icon:'—' },
-    { label:'Tempo',        value:formatTimeTaken(timeTakenSec), color:'var(--accent2)', icon:'⏱' }
-  ];
-  statsEl.innerHTML = statsData.map(s => `
-    <div class="glass rounded-xl p-4 text-center">
-      <div class="text-2xl font-bold" style="color:${s.color}">${s.icon} ${s.value}</div>
-      <div class="text-xs mt-1" style="color:var(--muted)">${s.label}</div>
-    </div>
-  `).join('');
-
-  // Badge
-  const badgeEl  = document.getElementById('result-badge');
-  const badgeTxt = document.getElementById('result-badge-text');
-  const badgeSub = document.getElementById('result-badge-sub');
-  badgeEl.className = `rounded-2xl p-5 mb-8 text-center fade-in ${passed ? 'badge-pass' : 'badge-fail'}`;
-  badgeTxt.textContent = passed
-    ? `✅ SUPERATO — ${pct}% di risposte corrette (soglia: 70%)`
-    : `❌ NON SUPERATO — ${pct}% di risposte corrette (soglia: 70%)`;
-  badgeSub.innerHTML =
-    `Punteggio grezzo: <strong style="color:var(--text)">${rawScore}/30</strong>` +
-    ` &nbsp;|&nbsp; Punteggio classifica: <strong style="color:var(--accent)">${leaderboardScore}</strong>` +
-    ` (×${multiplier})` +
-    ` &nbsp;|&nbsp; Posizione: <strong style="color:var(--accent2)">#${position}</strong>`;
-
-  renderInlineLeaderboard(lb, position);
-  renderReview();
-
-  if (timeExpired) {
-    const note = document.createElement('p');
-    note.className = 'text-center text-sm mb-4';
-    note.style.color = 'var(--danger)';
-    note.textContent = '⏰ Tempo scaduto — il quiz si è concluso automaticamente.';
-    document.getElementById('result-header').appendChild(note);
-  }
+    date:   getToday()
+  });
 
   showSection('section-result');
+  renderResult({ correct, answered, pct, passed, score, timeStr, mult, timeout });
 }
 
-/* ════════════════════════════════════════════════
-   LEADERBOARD INLINE
-   ════════════════════════════════════════════════ */
-function renderInlineLeaderboard(lb, myPosition) {
-  const container = document.getElementById('inline-leaderboard');
-  const today     = new Date().toISOString().split('T')[0];
-  const todayEntries = lb.entries.filter(e => e.date === today).slice(0, 10);
+function renderResult({ correct, answered, pct, passed, score, timeStr, mult, timeout }) {
+  // Icon e titolo
+  document.getElementById('result-icon').textContent    = passed ? '🎉' : timeout ? '⏰' : '📚';
+  document.getElementById('result-title').textContent   = passed ? 'Test Superato!' : timeout ? 'Tempo Scaduto' : 'Non Superato';
+  document.getElementById('result-subtitle').textContent =
+    `${STATE.playerName} · ${getToday()} · Durata: ${timeStr}`;
 
-  if (todayEntries.length === 0) {
-    container.innerHTML =
-      '<p class="text-sm text-center" style="color:var(--muted)">Nessuna entry oggi.</p>';
-    return;
-  }
+  // Stats grid
+  document.getElementById('result-stats').innerHTML = `
+    <div class="glass rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold" style="color:var(--success)">${correct}</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">Corrette</div>
+    </div>
+    <div class="glass rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold" style="color:var(--danger)">${30 - correct}</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">Errate/Skip</div>
+    </div>
+    <div class="glass rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold" style="color:var(--accent)">${pct}%</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">Punteggio</div>
+    </div>
+    <div class="glass rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold" style="color:var(--accent2)">${score}pt</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">Rank pts</div>
+    </div>
+  `;
 
-  const medals = ['🥇','🥈','🥉'];
-  const rowClass = i =>
-    i === 0 ? 'lb-row gold'   :
-    i === 1 ? 'lb-row silver' :
-    i === 2 ? 'lb-row bronze' : 'lb-row';
+  // Badge
+  const badge = document.getElementById('result-badge');
+  badge.className = `rounded-2xl p-5 mb-8 text-center fade-in ${passed ? 'badge-pass' : 'badge-fail'}`;
+  document.getElementById('result-badge-text').textContent =
+    passed ? `✅ SUPERATO — ${pct}% (soglia 70%)` : `❌ NON SUPERATO — ${pct}% (soglia 70%)`;
+  document.getElementById('result-badge-sub').textContent =
+    passed
+      ? `Ottimo lavoro, ${STATE.playerName}! Moltiplicatore velocità: ×${mult}`
+      : `Hai risposto correttamente a ${correct}/30 domande. Riprova!`;
 
-  container.innerHTML = todayEntries.map((e, i) => {
-    const isMe = (i + 1) === myPosition;
-    return `
-      <div class="${rowClass(i)}${isMe ? ' mine' : ''}">
-        <span class="text-lg w-6 flex-shrink-0">${medals[i] || `#${i+1}`}</span>
-        <span class="flex-1 font-medium text-sm"
-              style="color:${isMe ? 'var(--accent2)' : 'var(--text)'}">
-          ${e.name}${isMe ? ' <span style="color:var(--accent2);font-size:0.7rem">(tu)</span>' : ''}
-        </span>
-        <span class="text-xs" style="color:var(--muted)">${e.raw}/30</span>
-        <span class="font-bold text-sm" style="color:var(--accent)">${e.score}pt</span>
-        <span class="text-xs" style="color:${e.passed ? 'var(--success)':'var(--danger)'}">
-          ${e.passed ? '✅' : '❌'}
-        </span>
-      </div>
-    `;
-  }).join('');
+  // Leaderboard inline
+  renderInlineLeaderboard(score);
+
+  // Revisione
+  renderReview();
 }
 
-/* ════════════════════════════════════════════════
-   REVISIONE RISPOSTE
-   ════════════════════════════════════════════════ */
 function renderReview() {
   const container = document.getElementById('review-container');
+  container.innerHTML = STATE.questions.map((q, i) => {
+    const ans      = STATE.answers[i];
+    const isCorrect = ans === q.correct;
+    const skipped  = ans === null;
+    const cls      = skipped ? 'review-card unanswered-card' : isCorrect ? 'review-card correct-card' : 'review-card wrong-card';
+    const icon     = skipped ? '⬜' : isCorrect ? '✅' : '❌';
 
-  if (state.answers.length === 0) {
-    container.innerHTML =
-      '<p class="text-sm" style="color:var(--muted)">Nessuna risposta registrata.</p>';
-    return;
-  }
-
-  // Risposte date
-  const answered = state.answers.map((a, idx) => {
-    const q = state.questions[a.questionIndex];
-    const cls = a.isRight ? 'review-card correct-card' : 'review-card wrong-card';
-    const icon = a.isRight ? '✅' : '❌';
     return `
       <div class="${cls}">
-        <p class="text-xs font-semibold mb-1"
-           style="color:var(--muted)">Domanda ${a.questionIndex + 1}</p>
-        <p class="text-sm font-medium mb-3">${q.question}</p>
-        <p class="text-xs mb-1">
-          ${icon} <strong>Tua risposta:</strong>
-          <span style="color:${a.isRight ? 'var(--success)':'var(--danger)'}">
-            ${q.options[a.chosen]}
-          </span>
+        <p style="font-size:0.82rem;font-weight:600;margin-bottom:0.4rem">
+          ${icon} ${q.question}
         </p>
-        ${!a.isRight ? `
-          <p class="text-xs mb-2">
-            ✔ <strong>Risposta corretta:</strong>
-            <span style="color:var(--success)">${q.options[a.correct]}</span>
+        ${!skipped && !isCorrect ? `
+          <p style="font-size:0.78rem;color:#fca5a5;margin-bottom:0.2rem">
+            La tua risposta: ${q.options[ans]}
           </p>` : ''}
-        <p class="text-xs mt-2 pt-2"
-           style="color:var(--muted);border-top:1px solid var(--border)">
-          📖 ${q.explanation}
+        <p style="font-size:0.78rem;color:#6ee7b7;margin-bottom:0.4rem">
+          Risposta corretta: ${q.options[q.correct]}
+        </p>
+        <p style="font-size:0.76rem;color:var(--muted);line-height:1.6">
+          💡 ${q.explanation}
         </p>
       </div>
     `;
   }).join('');
-
-  // Domande non risposte (timeout)
-  const answeredIndices = new Set(state.answers.map(a => a.questionIndex));
-  const unansweredHTML  = state.questions
-    .map((q, i) => ({ q, i }))
-    .filter(({ i }) => !answeredIndices.has(i))
-    .map(({ q, i }) => `
-      <div class="review-card unanswered-card">
-        <p class="text-xs font-semibold mb-1" style="color:var(--muted)">
-          Domanda ${i + 1} — Non risposta
-        </p>
-        <p class="text-sm font-medium mb-2">${q.question}</p>
-        <p class="text-xs">
-          ✔ <strong>Risposta corretta:</strong>
-          <span style="color:var(--success)">${q.options[q.correct]}</span>
-        </p>
-        <p class="text-xs mt-2 pt-2"
-           style="color:var(--muted);border-top:1px solid var(--border)">
-          📖 ${q.explanation}
-        </p>
-      </div>
-    `).join('');
-
-  container.innerHTML = answered + unansweredHTML;
 }
 
-/* ════════════════════════════════════════════════
-   ACCORDION DISCLAIMER
-   ════════════════════════════════════════════════ */
-function toggleDisc(btn) {
-  const content = btn.nextElementSibling;
-  const isOpen  = content.classList.contains('open');
-  // Chiudi tutti
-  document.querySelectorAll('.disc-content').forEach(c => c.classList.remove('open'));
-  document.querySelectorAll('.disc-toggle').forEach(b => {
-    b.classList.remove('open');
-    b.setAttribute('aria-expanded', 'false');
-  });
-  if (!isOpen) {
-    content.classList.add('open');
-    btn.classList.add('open');
-    btn.setAttribute('aria-expanded', 'true');
-  }
-}
-
-/* ════════════════════════════════════════════════
-   LEADERBOARD — localStorage
-   ════════════════════════════════════════════════ */
-const LB_KEY = 'ssl_quiz_leaderboard_v1';
-
-function loadLeaderboard() {
-  try {
-    const raw = localStorage.getItem(LB_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return { entries: [] };
-}
-
-function saveLeaderboard(lb) {
-  try {
-    localStorage.setItem(LB_KEY, JSON.stringify(lb));
-  } catch(e) {}
-}
-
-/* ════════════════════════════════════════════════
-   PULSANTI RISULTATI
-   ════════════════════════════════════════════════ */
 function retryQuiz() {
   showSection('section-home');
-  document.getElementById('timer-box').style.display = 'none';
 }
-
 </script>
 </body>
 </html>
