@@ -3,259 +3,349 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz D.Lgs. 81/2008 - Formazione Sicurezza Lavoro</title>
+  <title>Quiz D.Lgs. 81/2008 - Sicurezza Lavoro | Formazione Didattica</title>
+  <meta name="description" content="Simulazione quiz D.Lgs. 81/2008 per apprendimento sicurezza luoghi di lavoro. Solo scopo didattico.">
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="manifest" href="data:application/manifest+json,{
-    'name': 'Quiz Sicurezza Lavoro D.Lgs. 81/2008',
-    'short_name': 'Quiz81',
-    'start_url': '.',
-    'display': 'standalone',
-    'background_color': '#1e3a8a',
-    'theme_color': '#3b82f6',
-    'icons': [{'src': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSIjM2I4MmY2Ii8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJhcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjYwMCI+ODwvdGV4dD4KPC9zdmc+', 'sizes': '100x100', 'type': 'image/svg+xml'}]
-  }">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              900: '#0f172a',
+              800: '#1e293b',
+              700: '#334155'
+            },
+            slate: {
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              300: '#cbd5e1',
+              400: '#94a3b8',
+              500: '#64748b',
+              600: '#475569'
+            },
+            cyan: {
+              500: '#0ea5e9'
+            },
+            orange: {
+              500: '#f97316'
+            },
+            emerald: {
+              500: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
   <style>
-    .glass { backdrop-filter: blur(20px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
-    .gradient-primary { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%); }
-    .neon-blue { box-shadow: 0 0 20px rgba(59,130,246,0.5); }
-    .pulse-glow { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.5); } 50% { box-shadow: 0 0 40px rgba(59,130,246,0.8); } }
-    .fade-in-up { animation: fadeInUp 0.6s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .scale-in { animation: scaleIn 0.3s ease-out; }
-    @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    :root {
+      --glass: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.12);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+    
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+    }
+    
+    .glass-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 35px 60px rgba(0,0,0,0.4);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .option-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(14,165,233,0.3);
+    }
+    
+    .correct { background: linear-gradient(135deg, #10b981, #059669) !important; }
+    .wrong { background: linear-gradient(135deg, #ef4444, #dc2626) !important; }
   </style>
 </head>
-<body class="gradient-primary min-h-screen text-white font-['Inter',sans-serif] antialiased overflow-x-hidden">
+
+<body class="overflow-x-hidden">
   
-  <!-- Disclaimer Popup -->
-  <div id="disclaimerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 hidden">
-    <div class="glass max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-8 scale-in">
-      <div class="flex justify-between items-start mb-6">
-        <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-300 to-blue-100 bg-clip-text text-transparent">⚠️ DISCLAIMER LEGALE</h2>
-        <button id="closeDisclaimer" class="text-2xl hover:scale-110 transition-transform">&times;</button>
+  <!-- TIMER TOP-RIGHT SEMPRE VISIBILE -->
+  <div id="timerContainer" class="fixed top-6 right-6 z-50 hidden md:block">
+    <div class="glass rounded-xl p-4 min-w-[140px] text-center shadow-2xl">
+      <!-- Barra progresso -->
+      <div class="w-full h-1 bg-slate-600 rounded-full mb-3 overflow-hidden">
+        <div id="timerProgress" class="h-full bg-cyan-500 transition-all duration-300 rounded-full"></div>
       </div>
-      <div class="space-y-4 text-sm leading-relaxed">
-        <p><strong>AVVISO IMPORTANTE:</strong> Questo quiz ha <strong>ESCLUSIVA FINALITÀ DIDATTICA</strong> e non costituisce in alcun modo formazione obbligatoria ai sensi del D.Lgs. 81/2008.</p>
-        <p><strong>❌ VIETATO:</strong></p>
-        <ul class="list-disc list-inside space-y-1 text-orange-200">
-          <li>Diffusione, riproduzione o distribuzione non autorizzata</li>
-          <li>Uso commerciale o professionale senza espresso consenso scritto</li>
-          <li>Modifica del contenuto o dei risultati</li>
-          <li>Utilizzo come sostituto di corsi formativi certificati</li>
-        </ul>
-        <p><strong>✅ AUTORIZZATO SOLO:</strong> Studio personale, esercitazioni formative private, simulazioni didattiche.</p>
-        <p class="border-t pt-4 mt-4 text-xs">
-          <strong>Responsabilità:</strong> L'autore declina ogni responsabilità per utilizzi impropri. I risultati non hanno valore legale/certificativo.
-        </p>
-        <div class="mt-6 pt-6 border-t border-blue-500/30">
-          <p class="text-center font-bold text-lg mb-2">Credits:</p>
-          <p class="text-center text-blue-200 italic">
-            Dott. Salvatore Trono<br>
-            <span class="text-sm font-normal">Laureato in Servizi Giuridici per l'Impresa • Formatore • Esperto in Sicurezza sui Luoghi di Lavoro</span>
+      
+      <!-- Tempo -->
+      <div id="timerDisplay" class="text-2xl font-bold font-mono text-cyan-500 transition-colors duration-300">
+        45:00
+      </div>
+      
+      <!-- Label -->
+      <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">
+        Tempo rimanente
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE TIMER -->
+  <div id="mobileTimer" class="md:hidden fixed top-4 left-4 right-4 z-50">
+    <div class="glass rounded-lg p-3 text-center">
+      <div id="mobileTimerDisplay" class="text-lg font-bold text-cyan-500 font-mono">45:00</div>
+      <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Tempo rimanente</div>
+    </div>
+  </div>
+
+  <main class="min-h-screen py-12 px-4 md:px-8">
+    
+    <!-- HEADER HOME -->
+    <header class="max-w-6xl mx-auto mb-16 text-center fade-in">
+      <div class="glass p-8 md:p-12 rounded-3xl mb-12">
+        <div class="w-24 h-24 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-3xl mx-auto mb-6 flex items-center justify-center">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl md:text-6xl font-black bg-gradient-to-r from-slate-100 via-cyan-400 to-slate-200 bg-clip-text text-transparent mb-4 leading-tight">
+            Quiz D.Lgs. 81/2008
+          </h1>
+          <p class="text-xl md:text-2xl text-slate-300 font-semibold max-w-2xl mx-auto">
+            Simulazione interattiva per apprendimento sicurezza sui luoghi di lavoro
           </p>
         </div>
       </div>
-      <div class="flex gap-3 mt-8 pt-6 border-t border-blue-500/30">
-        <button id="acceptDisclaimer" class="flex-1 bg-green-600/80 hover:bg-green-500/90 glass rounded-xl py-3 font-semibold transition-all neon-blue">✅ Accetto e Continuo</button>
-        <button onclick="window.open('leaderboard.html','_blank')" class="px-6 glass hover:neon-blue rounded-xl py-3 font-semibold transition-all">📊 Classifica</button>
+
+      <!-- DISCLAIMER SEZIONE DETTAGLIATA -->
+      <section class="glass max-w-4xl mx-auto p-8 md:p-12 rounded-3xl mb-16 fade-in">
+        <h3 class="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent">
+          📋 DISCLAIMER
+        </h3>
+        
+        <div class="grid md:grid-cols-2 gap-8 text-slate-200">
+          
+          <!-- 1. Disclaimer Completo -->
+          <div class="glass p-6 rounded-2xl hover:shadow-2xl transition-all">
+            <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <span class="text-2xl font-bold text-white">⚖️</span>
+            </div>
+            <h4 class="text-2xl font-bold mb-4 text-emerald-400 text-center">Disclaimer Completo</h4>
+            <p class="text-lg leading-relaxed">
+              Questo strumento è un <strong>simulatore didattico</strong> creato esclusivamente per scopi di <strong>studio personale e apprendimento</strong>. 
+              <br><br>
+              <strong>VIETATO:</strong> Diffusione, commercializzazione, uso in contesti professionali senza autorizzazione scritta del creatore. 
+              Non sostituisce corsi accreditati RSPP/ASPp né certificazioni ufficiali.
+            </p>
+          </div>
+
+          <!-- 2. Credits Dettagliati -->
+          <div class="glass p-6 rounded-2xl hover:shadow-2xl transition-all">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <span class="text-2xl font-bold text-white">👨‍⚕️</span>
+            </div>
+            <h4 class="text-2xl font-bold mb-4 text-cyan-400 text-center">Credits Autore</h4>
+            <blockquote class="text-lg leading-relaxed italic border-l-4 border-cyan-500 pl-4">
+              <strong>Dott. Salvatore Trono</strong><br>
+              Laureato in Servizi Giuridici per l'Impresa<br>
+              Formatore certificato • Esperto in Sicurezza sui Luoghi di Lavoro<br>
+              <span class="text-sm text-slate-400">Contenuti basati su normativa D.Lgs. 81/2008</span>
+            </blockquote>
+          </div>
+
+          <!-- 3. Finalità Didattica -->
+          <div class="glass p-6 rounded-2xl hover:shadow-2xl transition-all md:col-span-2">
+            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <span class="text-2xl font-bold text-white">🎓</span>
+            </div>
+            <h4 class="text-2xl font-bold mb-4 text-orange-400 text-center">Scopo Didattico</h4>
+            <p class="text-lg leading-relaxed">
+              Strumento progettato per <strong>motivare l'apprendimento autonomo</strong>, testare conoscenze e <strong>stimolare riflessione</strong> su D.Lgs. 81/2008.
+              <br><br>
+              <strong>Obiettivi:</strong> Familiarizzare con quiz formato esame • Applicare conoscenze normative • Monitorare progressi personali.
+            </p>
+          </div>
+
+          <!-- 4. Non Sostituisce Formazione -->
+          <div class="glass p-6 rounded-2xl hover:shadow-2xl transition-all md:col-span-2">
+            <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <span class="text-2xl font-bold text-white">🚫</span>
+            </div>
+            <h4 class="text-2xl font-bold mb-4 text-red-400 text-center">NON È Formazione Ufficiale</h4>
+            <p class="text-lg leading-relaxed">
+              <strong>IMPORTANTE:</strong> Questo NON costituisce né sostituisce la <strong>formazione obbligatoria</strong> prevista dall'art. 37 D.Lgs. 81/2008.
+              <br><br>
+              Per RSPP/ASPp/Addetti è <strong>obbligatorio</strong> frequentare corsi accreditati con docente qualificato, verifica finale e attestato valido ai fini normativi.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUTTON START QUIZ -->
+      <div class="fade-in">
+        <button id="startQuizBtn" class="glass-hover bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-2xl md:text-3xl font-bold px-12 md:px-20 py-8 rounded-3xl shadow-2xl inline-block transition-all duration-300">
+          🚀 Inizia Quiz (45 min)
+        </button>
+      </div>
+    </header>
+
+    <!-- QUIZ CONTAINER -->
+    <div id="quizContainer" class="max-w-4xl mx-auto hidden fade-in">
+      <div id="questionContainer" class="glass p-8 md:p-12 rounded-3xl mb-8">
+        <!-- Contenuto dinamico -->
+      </div>
+      
+      <div id="progressBar" class="glass p-4 rounded-2xl mb-8">
+        <div class="flex items-center justify-between text-sm text-slate-400 mb-2">
+          <span>Domanda <span id="currentQuestionNum">1</span> di <span id="totalQuestions">20</span></span>
+          <span id="scorePreview">0/0 corretti</span>
+        </div>
+        <div class="w-full bg-slate-700 rounded-full h-2">
+          <div id="progressFill" class="bg-gradient-to-r from-cyan-500 to-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Main App -->
-  <div id="appContainer">
-    <!-- Home Screen -->
-    <section id="homeScreen" class="min-h-screen flex flex-col justify-center items-center p-8 text-center fade-in-up">
-      <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <div class="mb-12">
-          <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 mb-6 glass">
-            <div class="w-16 h-16 bg-blue-400/20 rounded-2xl flex items-center justify-center neon-blue pulse-glow">
-              <span class="text-2xl">⚡</span>
-            </div>
-            <div>
-              <h1 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent mb-2">
-                Quiz D.Lgs. 81/2008
-              </h1>
-              <p class="text-xl text-blue-100 font-semibold">Sicurezza sui Luoghi di Lavoro</p>
-            </div>
+    <!-- RESULTS -->
+    <div id="resultsContainer" class="max-w-4xl mx-auto hidden fade-in">
+      <div class="glass rounded-3xl p-12">
+        <h2 class="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-emerald-500 bg-clip-text text-transparent">
+          📊 Riepilogo Quiz Completato
+        </h2>
+        
+        <!-- Statistiche Principali -->
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+          <div class="glass p-8 rounded-2xl text-center">
+            <div class="text-4xl font-bold text-cyan-400 mb-2" id="finalScoreDisplay">0</div>
+            <div class="text-xl font-semibold text-slate-300">/ <span id="totalQuestionsFinal">20</span></div>
+            <div class="text-sm text-slate-400 mt-2">Risposte corrette</div>
           </div>
           
-          <!-- Legal Compliance -->
-          <div class="glass max-w-2xl mx-auto p-6 rounded-2xl mb-12 backdrop-blur-xl">
-            <h3 class="text-2xl font-bold mb-4 text-center bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
-              🛡️ CONFORMITÀ LEGALE
-            </h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div class="flex items-center gap-2 p-3 bg-emerald-500/20 rounded-xl">
-                <span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-                <span>Disclaimer Completo</span>
-              </div>
-              <div class="flex items-center gap-2 p-3 bg-emerald-500/20 rounded-xl">
-                <span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-                <span>Credits Dettagliati</span>
-              </div>
-              <div class="flex items-center gap-2 p-3 bg-emerald-500/20 rounded-xl">
-                <span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-                <span>Finalità Didattica</span>
-              </div>
-              <div class="flex items-center gap-2 p-3 bg-emerald-500/20 rounded-xl">
-                <span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-                <span>Non Formazione Obbl.</span>
-              </div>
-            </div>
+          <div class="glass p-8 rounded-2xl text-center">
+            <div class="text-4xl font-bold text-orange-400 mb-2" id="timeUsedDisplay">--:--</div>
+            <div class="text-sm text-slate-400">Tempo impiegato</div>
+            <div class="text-sm text-slate-500 mt-1" id="multiplierDisplay">1.0x</div>
           </div>
-
-          <!-- CTA Buttons -->
-          <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
-            <button id="startQuizBtn" class="group flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-6 px-8 rounded-2xl text-xl shadow-2xl hover:neon-blue hover:scale-105 transition-all duration-300 glass backdrop-blur-xl">
-              🚀 Inizia Quiz
-            </button>
-            <a href="leaderboard.html" target="_blank" class="group flex-1 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-6 px-8 rounded-2xl text-xl shadow-2xl hover:scale-105 transition-all duration-300 glass backdrop-blur-xl flex items-center justify-center">
-              📊 Classifica Giornaliera
-            </a>
-          </div>
-
-          <!-- Features -->
-          <div class="grid md:grid-cols-3 gap-6 mt-20 max-w-5xl mx-auto">
-            <div class="glass p-6 rounded-2xl hover:scale-105 transition-all group">
-              <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:rotate-12 transition-transform mx-auto">🎯</div>
-              <h4 class="font-bold text-lg mb-2">30 Domande Random</h4>
-              <p class="text-blue-200 text-sm">Estrazione casuale dal paniere ufficiale</p>
-            </div>
-            <div class="glass p-6 rounded-2xl hover:scale-105 transition-all group">
-              <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:rotate-12 transition-transform mx-auto">⚡</div>
-              <h4 class="font-bold text-lg mb-2">Punteggio Tempo-Bonus</h4>
-              <p class="text-blue-200 text-sm">Risposta veloce = moltiplicatore fino a 3x</p>
-            </div>
-            <div class="glass p-6 rounded-2xl hover:scale-105 transition-all group">
-              <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:rotate-12 transition-transform mx-auto">🏆</div>
-              <h4 class="font-bold text-lg mb-2">Classifica Live</h4>
-              <p class="text-blue-200 text-sm">Reset automatico ogni 24h</p>
-            </div>
+          
+          <div class="glass p-8 rounded-2xl text-center">
+            <div class="text-4xl font-bold text-emerald-400 mb-2" id="finalPercentage">0%</div>
+            <div class="text-sm text-slate-400">Percentuale finale</div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Name Input Modal -->
-    <div id="nameModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-      <div class="glass max-w-md w-full p-8 rounded-2xl scale-in">
-        <h2 class="text-2xl font-bold mb-6 text-center">👤 Inserisci il tuo nome</h2>
-        <input id="userNameInput" type="text" maxlength="20" placeholder="Es: Mario Rossi" 
-               class="w-full p-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 text-lg font-semibold text-center focus:outline-none focus:ring-4 ring-blue-500/50 transition-all" 
-               aria-label="Inserisci il tuo nome per il quiz">
-        <div class="flex gap-3 mt-8">
-          <button id="confirmName" class="flex-1 bg-green-600 hover:bg-green-500 glass py-4 rounded-xl font-bold text-lg transition-all">✅ Conferma</button>
-          <button id="backHome" class="flex-1 bg-gray-600 hover:bg-gray-500 glass py-4 rounded-xl font-bold text-lg transition-all">🏠 Home</button>
+        <!-- Dettaglio Risposte -->
+        <div class="mb-12">
+          <h3 class="text-2xl font-bold mb-6 text-slate-200">📝 Analisi Risposte</h3>
+          <div id="answersReview" class="space-y-3 max-h-96 overflow-y-auto">
+            <!-- Generato dinamicamente -->
+          </div>
+        </div>
+
+        <!-- Azioni Finali -->
+        <div class="grid md:grid-cols-2 gap-6 pt-8 border-t border-slate-700">
+          <button onclick="location.reload()" class="glass-hover bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold py-4 px-8 rounded-2xl text-lg transition-all">
+            🔄 Nuovo Quiz
+          </button>
+          <button onclick="window.print()" class="glass-hover bg-gradient-to-r from-slate-600 to-slate-700 text-white font-bold py-4 px-8 rounded-2xl text-lg transition-all">
+            🖨️ Stampa Risultati
+          </button>
         </div>
       </div>
     </div>
+  </main>
 
-    <!-- Quiz Screen -->
-    <section id="quizScreen" class="min-h-screen p-8 hidden fade-in-up">
-      <div class="max-w-2xl mx-auto">
-        <!-- Progress Header -->
-        <div class="glass p-6 rounded-2xl mb-8 backdrop-blur-xl">
-          <div class="flex items-center justify-between mb-4">
-            <div id="userDisplay" class="font-bold text-xl"></div>
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <span id="score" class="font-mono text-2xl font-bold text-emerald-400">0</span>
-                <span class="text-sm">punti</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span id="questionNum" class="font-bold">1</span>
-                <span class="text-sm">/ 30</span>
-              </div>
-            </div>
-          </div>
-          <div class="w-full bg-white/10 rounded-full h-3">
-            <div id="progressBar" class="bg-gradient-to-r from-emerald-400 to-blue-400 h-3 rounded-full transition-all" style="width: 0%"></div>
-          </div>
-        </div>
-
-        <!-- Question -->
-        <div id="questionContainer" class="glass p-8 rounded-2xl mb-8 backdrop-blur-xl min-h-[300px] flex items-center justify-center">
-          <div class="text-center text-blue-200">
-            <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-spin-slow">
-              <span class="text-3xl">⚙️</span>
-            </div>
-            <p class="text-lg font-semibold">Preparazione domande...</p>
-          </div>
-        </div>
-
-        <!-- Timer -->
-        <div id="timerContainer" class="glass p-4 rounded-xl mb-6 hidden">
-          <div class="text-center">
-            <div id="timer" class="text-3xl font-mono font-bold text-yellow-400 mb-1">15</div>
-            <div class="w-full bg-red-500/20 rounded-full h-2 mt-2">
-              <div id="timerBar" class="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all" style="width: 100%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Options -->
-        <div id="optionsContainer" class="space-y-3"></div>
+  <!-- Popup Termini (opzionale) -->
+  <div id="termsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z- flex items-center justify-center p-4">
+    <div class="glass max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-8 md:p-12 mx-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-slate-100">📋 Termini d'Uso</h2>
+        <button id="closeTerms" class="text-2xl text-slate-400 hover:text-white">×</button>
       </div>
-    </section>
-
-    <!-- Results Screen -->
-    <section id="resultsScreen" class="min-h-screen p-8 hidden fade-in-up">
-      <div class="max-w-4xl mx-auto">
-        <!-- Results Header -->
-        <div class="glass p-8 rounded-3xl mb-12 backdrop-blur-xl text-center">
-          <div class="mb-8">
-            <div id="finalScore" class="text-6xl font-black bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-4">0</div>
-            <div id="finalPosition" class="text-2xl font-bold text-blue-300 mb-2">Posizione #1</div>
-            <div class="text-sm text-blue-200">su <span id="totalPlayers">0</span> giocatori oggi</div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-2xl mx-auto">
-            <div class="glass p-6 rounded-2xl">
-              <div class="text-3xl font-bold text-emerald-400 mb-2" id="correctCount">0</div>
-              <p class="text-sm text-blue-200">Corrette</p>
-            </div>
-            <div class="glass p-6 rounded-2xl">
-              <div class="text-3xl font-bold text-red-400 mb-2" id="wrongCount">0</div>
-              <p class="text-sm text-blue-200">Sbagliate</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Detailed Answers -->
-        <div class="glass p-8 rounded-3xl mb-12 backdrop-blur-xl">
-          <h3 class="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">📋 RIEPILOGO RISPOSTE</h3>
-          <div id="answersList" class="space-y-4 max-h-96 overflow-y-auto"></div>
-        </div>
-
-        <!-- Leaderboard Top 10 -->
-        <div class="glass p-8 rounded-3xl mb-12 backdrop-blur-xl">
-          <h3 class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">🥇 CLASSIFICA TOP 10 OGGI</h3>
-          <div id="top10Leaderboard" class="space-y-2"></div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-          <button id="newQuizBtn" class="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 glass py-6 px-8 rounded-2xl font-bold text-xl shadow-2xl hover:neon-blue hover:scale-105 transition-all">🔄 Nuovo Quiz</button>
-          <button id="backHomeBtn" class="flex-1 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 glass py-6 px-8 rounded-2xl font-bold text-xl shadow-2xl hover:scale-105 transition-all">🏠 Home</button>
-        </div>
-
-        <!-- Export -->
-        <div class="glass p-4 rounded-xl mt-8 text-center">
-          <button id="exportPDF" class="text-blue-400 hover:text-blue-300 font-semibold underline text-sm">📄 Scarica PDF Risultati</button>
-        </div>
+      <div id="termsContent" class="prose prose-invert max-w-none text-slate-200 leading-relaxed">
+        <!-- Contenuto dinamico -->
       </div>
-    </section>
+    </div>
   </div>
 
   <script>
-    // ================================
-    // PANIERE DOMANDE - AGGIUNGI QUI IL TUO JSON
-    // ================================
-    const QUIZ_PANIER = [
+    // ========== TIMER MANAGER ==========
+    class TimerManager {
+      constructor(totalSeconds = 2700) {
+        this.totalSeconds = totalSeconds;
+        this.remainingSeconds = totalSeconds;
+        this.isRunning = false;
+        this.intervalId = null;
+        this.onTick = null;
+        this.onExpire = null;
+      }
+
+      start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        this.intervalId = setInterval(() => {
+          this.remainingSeconds--;
+          if (this.onTick) this.onTick(this.remainingSeconds);
+          if (this.remainingSeconds <= 0) {
+            this.stop();
+            if (this.onExpire) this.onExpire();
+          }
+        }, 1000);
+      }
+
+      stop() {
+        this.isRunning = false;
+        if (this.intervalId) clearInterval(this.intervalId);
+      }
+
+      getFormattedTime() {
+        const minutes = Math.floor(this.remainingSeconds / 60);
+        const seconds = this.remainingSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+
+      getProgress() {
+        return (this.remainingSeconds / this.totalSeconds) * 100;
+      }
+
+      isLowTime() {
+        return this.remainingSeconds < 300;
+      }
+
+      getTimeMultiplier() {
+        const percentageUsed = (this.totalSeconds - this.remainingSeconds) / this.totalSeconds;
+        if (percentageUsed <= 0.25) return 1.5;
+        if (percentageUsed <= 0.5) return 1.3;
+        if (percentageUsed <= 0.75) return 1.1;
+        return 1.0;
+      }
+    }
+
+    // ========== DOMENI DELLE DOMANDE ==========
+    const questions = [
     {
                 question: "1. Ai fini ed agli effetti delle disposizioni di cui al D.Lgs. n. 81/2008 si intende per lavoratore:",
                 options: [
@@ -917,388 +1007,187 @@
                 correct: 0
             }
         ];
-    // ================================
-    // QUIZ STATE MANAGER
-    // ================================
-    class QuizState {
-      constructor() {
-        this.userName = '';
-        this.questions = [];
-        this.currentQuestion = 0;
+   // ========== QUIZ MANAGER ==========
+    class QuizManager {
+      constructor(questions) {
+        this.questions = questions;
+        this.currentIndex = 0;
+        this.answers = new Array(questions.length).fill(null);
+        this.timer = new TimerManager(2700);
         this.score = 0;
-        this.correctAnswers = 0;
-        this.wrongAnswers = 0;
-        this.startTime = 0;
-        this.answers = [];
-        this.questionStartTime = 0;
-        this.init();
+        this.totalQuestions = questions.length;
       }
 
       init() {
-        const saved = localStorage.getItem('quizState');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.userName && parsed.currentQuestion > 0 && this.isSameDay(parsed.startTime)) {
-            Object.assign(this, parsed);
-          }
-        }
-        this.save();
+        this.timer.onTick = (remaining) => this.updateTimerDisplay(remaining);
+        this.timer.onExpire = () => this.handleQuizEnd('tempo scaduto');
+        this.timer.start();
+        this.showQuestion();
+        this.updateProgress();
       }
 
-      isSameDay(timestamp) {
-        const today = new Date().setHours(0,0,0,0);
-        const savedDay = new Date(timestamp).setHours(0,0,0,0);
-        return today === savedDay;
-      }
-
-      save() {
-        localStorage.setItem('quizState', JSON.stringify(this));
-      }
-
-      resetForNewQuiz() {
-        this.questions = [];
-        this.currentQuestion = 0;
-        this.score = 0;
-        this.correctAnswers = 0;
-        this.wrongAnswers = 0;
-        this.startTime = Date.now();
-        this.answers = [];
-        this.save();
-      }
-
-      generateQuestions() {
-        // Estrai 30 domande casuali
-        const shuffled = [...QUIZ_PANIER].sort(() => Math.random() - 0.5);
-        this.questions = shuffled.slice(0, 30).map(q => ({
-          ...q,
-          options: [...q.options].sort(() => Math.random() - 0.5) // Shuffle opzioni
-        }));
-        this.save();
-      }
-
-      selectAnswer(selectedIndex) {
-        const question = this.questions[this.currentQuestion];
-        const correctIndex = question.options.indexOf(question.options[question.correct]);
-        const responseTime = (Date.now() - this.questionStartTime) / 1000; // secondi
+      showQuestion() {
+        const q = this.questions[this.currentIndex];
+        const container = document.getElementById('questionContainer');
         
-        // Calcola punteggio con moltiplicatore tempo (max 3x, min 0.15x)
-        const timeMultiplier = Math.max(0.15, Math.min(3, 3 - (responseTime / 10))); // 10s = 3x, 30s+ = 0.15x
-        
-        let points = 0;
-        let isCorrect = selectedIndex === correctIndex;
-        
-        if (isCorrect) {
-          points = 1 * timeMultiplier;
-          this.correctAnswers++;
-        } else {
-          points = -0.15;
-          this.wrongAnswers++;
-        }
-
-        this.score = Math.max(0, this.score + points); // Non sotto zero
-
-        this.answers.push({
-          questionNum: this.currentQuestion + 1,
-          question: question.question,
-          selected: question.options[selectedIndex],
-          correct: question.options[question.correct],
-          isCorrect,
-          points,
-          time: responseTime.toFixed(1)
-        });
-
-        this.questionStartTime = 0;
-        this.save();
-      }
-
-      nextQuestion() {
-        this.currentQuestion++;
-        this.save();
-        return this.currentQuestion < 30;
-      }
-
-      getLeaderboard() {
-        const scores = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-        return scores.filter(s => this.isSameDay(s.timestamp))
-                     .sort((a, b) => b.score - a.score)
-                     .slice(0, 10);
-      }
-
-      saveToLeaderboard() {
-        const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-        leaderboard.push({
-          name: this.userName,
-          score: this.score,
-          timestamp: Date.now()
-        });
-        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-      }
-
-      getPosition() {
-        const scores = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-        const todayScores = scores.filter(s => this.isSameDay(s.timestamp))
-                                 .sort((a, b) => b.score - a.score);
-        const position = todayScores.findIndex(s => s.name === this.userName && s.score === this.score) + 1;
-        return position > 0 ? position : todayScores.filter(s => s.score > this.score).length + 1;
-      }
-    }
-
-    // ================================
-    // QUIZ UI CONTROLLER
-    // ================================
-    class QuizUI {
-      constructor(state) {
-        this.state = state;
-        this.timer = 15;
-        this.timerInterval = null;
-        this.initEventListeners();
-        this.showDisclaimer();
-      }
-
-      initEventListeners() {
-        // Disclaimer
-        document.getElementById('acceptDisclaimer').onclick = () => {
-          localStorage.setItem('disclaimerAccepted', 'true');
-          document.getElementById('disclaimerModal').classList.add('hidden');
-        };
-        document.getElementById('closeDisclaimer').onclick = () => {
-          document.getElementById('disclaimerModal').classList.add('hidden');
-        };
-
-        // Navigation
-        document.getElementById('startQuizBtn').onclick = () => this.showNameModal();
-        document.getElementById('confirmName').onclick = () => this.startQuiz();
-        document.getElementById('backHome').onclick = () => this.showHome();
-        document.getElementById('backHomeBtn').onclick = () => this.showHome();
-        document.getElementById('newQuizBtn').onclick = () => this.newQuiz();
-
-        // Export
-        document.getElementById('exportPDF').onclick = () => this.exportPDF();
-      }
-
-      showDisclaimer() {
-        if (localStorage.getItem('disclaimerAccepted') !== 'true') {
-          document.getElementById('disclaimerModal').classList.remove('hidden');
-        }
-      }
-
-      showNameModal() {
-        document.getElementById('nameModal').classList.remove('hidden');
-        document.getElementById('userNameInput').focus();
-      }
-
-      startQuiz() {
-        const name = document.getElementById('userNameInput').value.trim();
-        if (!name) return alert('❌ Inserisci il tuo nome!');
-        
-        this.state.userName = name;
-        document.getElementById('userDisplay').textContent = `Giocatore: ${name}`;
-        document.getElementById('nameModal').classList.add('hidden');
-        
-        this.state.resetForNewQuiz();
-        this.state.generateQuestions();
-        this.showQuizScreen();
-      }
-
-      showQuizScreen() {
-        document.getElementById('homeScreen').classList.add('hidden');
-        document.getElementById('quizScreen').classList.remove('hidden');
-        this.renderCurrentQuestion();
-      }
-
-      renderCurrentQuestion() {
-        const qIndex = this.state.currentQuestion;
-        if (qIndex >= 30) {
-          this.showResults();
-          return;
-        }
-
-        const question = this.state.questions[qIndex];
-        document.getElementById('questionNum').textContent = qIndex + 1;
-        document.getElementById('score').textContent = this.state.score.toFixed(2);
-        document.getElementById('progressBar').style.width = `${((qIndex + 1) / 30) * 100}%`;
-
-        document.getElementById('questionContainer').innerHTML = `
-          <div class="text-left max-w-4xl mx-auto">
-            <div class="text-2xl font-bold mb-8 leading-relaxed">${question.question}</div>
+        container.innerHTML = `
+          <div class="text-center mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-100 mb-8 leading-tight">${q.question}</h2>
+          </div>
+          
+          <div class="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            ${q.options.map((option, idx) => `
+              <button class="option-btn glass-hover h-24 md:h-32 p-6 rounded-2xl text-left text-lg font-semibold border-2 border-transparent focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 transition-all" 
+                      onclick="quizManager.selectAnswer(${idx})" 
+                      aria-label="Opzione ${idx + 1}">
+                ${String.fromCharCode(65 + idx)}. ${option}
+              </button>
+            `).join('')}
+          </div>
+          
+          <div class="mt-12 text-center">
+            <div class="glass inline-block px-8 py-3 rounded-xl text-sm text-slate-500">
+              Tempo rimanente: <span id="questionTimer">${this.timer.getFormattedTime()}</span>
+            </div>
           </div>
         `;
 
-        const container = document.getElementById('optionsContainer');
-        container.innerHTML = '';
-        
-        question.options.forEach((option, index) => {
-          const btn = document.createElement('button');
-          btn.className = 'glass w-full p-6 rounded-2xl text-left hover:scale-[1.02] hover:neon-blue transition-all backdrop-blur-xl group hover:bg-white/20 border-2 border-white/10';
-          btn.innerHTML = `
-            <div class="flex items-center gap-4">
-              <span class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl font-bold group-hover:bg-white/20 transition-all">${String.fromCharCode(65 + index)}</span>
-              <span class="font-semibold text-lg">${option}</span>
-            </div>
-          `;
-          btn.onclick = () => this.selectAnswer(index);
-          container.appendChild(btn);
+        document.getElementById('currentQuestionNum').textContent = this.currentIndex + 1;
+      }
+
+      selectAnswer(selectedIndex) {
+        const q = this.questions[this.currentIndex];
+        this.answers[this.currentIndex] = selectedIndex;
+
+        // Evidenzia risposta
+        document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+          btn.disabled = true;
+          btn.classList.add('opacity-75', 'cursor-not-allowed');
+          
+          if (idx === q.correct) {
+            btn.classList.add('correct');
+            btn.innerHTML = `<span class="font-bold text-white">✓ CORRETTA</span> <br><small class="text-white/90">${btn.textContent.split('.')[1].trim()}</small>`;
+          } else if (idx === selectedIndex && idx !== q.correct) {
+            btn.classList.add('wrong');
+            btn.innerHTML = `<span class="font-bold text-white/80">✗ SBAGLIATA</span> <br><small class="text-white/70">${btn.textContent.split('.')[1].trim()}</small>`;
+          }
         });
 
-        // Avvia timer
-        this.startTimer();
-        this.state.questionStartTime = Date.now();
-      }
+        // Feedback
+        if (selectedIndex === q.correct) {
+          this.score++;
+        }
 
-      startTimer() {
-        this.timer = 30; // 30 secondi per risposta
-        document.getElementById('timerContainer').classList.remove('hidden');
-        this.updateTimer();
-        this.timerInterval = setInterval(() => {
-          this.timer--;
-          this.updateTimer();
-          if (this.timer <= 0) {
-            clearInterval(this.timerInterval);
-            this.selectAnswer(-1); // Timeout = risposta sbagliata
-          }
-        }, 1000);
-      }
-
-      updateTimer() {
-        document.getElementById('timer').textContent = this.timer;
-        const percent = (this.timer / 30) * 100;
-        document.getElementById('timerBar').style.width = `${percent}%`;
-      }
-
-      selectAnswer(index) {
-        clearInterval(this.timerInterval);
-        document.getElementById('timerContainer').classList.add('hidden');
-        
-        this.state.selectAnswer(index);
-        document.getElementById('score').textContent = this.state.score.toFixed(2);
-        
+        // Prossima domanda o fine
         setTimeout(() => {
-          if (this.state.nextQuestion()) {
-            this.renderCurrentQuestion();
+          if (this.currentIndex < this.totalQuestions - 1) {
+            this.currentIndex++;
+            this.showQuestion();
+            this.updateProgress();
           } else {
-            this.state.saveToLeaderboard();
-            this.showResults();
+            this.handleQuizEnd('completato');
           }
-        }, 800);
+        }, 2000);
       }
 
-      showResults() {
-        document.getElementById('quizScreen').classList.add('hidden');
-        document.getElementById('resultsScreen').classList.remove('hidden');
-        
-        document.getElementById('finalScore').textContent = this.state.score.toFixed(2);
-        document.getElementById('correctCount').textContent = this.state.correctAnswers;
-        document.getElementById('wrongCount').textContent = this.state.wrongAnswers;
-        document.getElementById('finalPosition').textContent = `Posizione #${this.state.getPosition()}`;
-        
-        const totalPlayers = this.state.getLeaderboard().length;
-        document.getElementById('totalPlayers').textContent = totalPlayers;
+      updateTimerDisplay(remaining) {
+        document.getElementById('timerDisplay').textContent = this.timer.getFormattedTime();
+        document.getElementById('mobileTimerDisplay').textContent = this.timer.getFormattedTime();
+        document.getElementById('timerProgress').style.width = this.timer.getProgress() + '%';
 
-        this.renderAnswers();
-        this.renderTop10();
+        const display = document.getElementById('timerDisplay');
+        const mobileDisplay = document.getElementById('mobileTimerDisplay');
+        const progress = document.getElementById('timerProgress');
+
+        if (this.timer.isLowTime()) {
+          display.className = 'text-2xl font-bold font-mono text-orange-500 transition-colors duration-300';
+          mobileDisplay.className = 'text-lg font-bold text-orange-500 font-mono';
+          progress.className = 'h-full bg-orange-500 transition-all duration-300 rounded-full';
+        }
       }
 
-      renderAnswers() {
-        const container = document.getElementById('answersList');
-        container.innerHTML = '';
+      updateProgress() {
+        const progress = (this.currentIndex / this.totalQuestions) * 100;
+        document.getElementById('progressFill').style.width = progress + '%';
+        document.getElementById('scorePreview').textContent = `${this.score}/${this.currentIndex}`;
+        document.getElementById('totalQuestions').textContent = this.totalQuestions;
+      }
+
+      handleQuizEnd(reason) {
+        this.timer.stop();
+        const timeMultiplier = this.timer.getTimeMultiplier();
+        const finalScore = Math.round((this.score / this.totalQuestions) * 10 * timeMultiplier * 10) / 10;
         
-        this.state.answers.forEach((answer, index) => {
-          const div = document.createElement('div');
-          div.className = `glass p-4 rounded-xl ${answer.isCorrect ? 'border-l-4 border-emerald-400 bg-emerald-500/10' : 'border-l-4 border-red-400 bg-red-500/10'}`;
-          div.innerHTML = `
-            <div class="font-bold mb-2">Q${answer.questionNum}</div>
-            <div class="text-sm mb-2 line-clamp-2">${answer.question}</div>
-            <div class="flex gap-4 text-sm mb-2">
-              <span class="${answer.isCorrect ? 'text-emerald-400 font-semibold' : 'text-red-400 line-through'}">Tua: ${answer.selected}</span>
-              <span class="text-emerald-400 font-semibold">✓ ${answer.correct}</span>
-            </div>
-            <div class="flex gap-4 text-xs text-blue-300">
-              <span>${answer.time}s</span>
-              <span>${answer.points.toFixed(2)}pt</span>
-              ${!answer.isCorrect ? '<span class="text-red-400">⚠️ Tempo bonus perso</span>' : ''}
-            </div>
-          `;
-          container.appendChild(div);
+        this.showResults({
+          score: this.score,
+          total: this.totalQuestions,
+          percentage: Math.round((this.score / this.totalQuestions) * 100),
+          finalScore: finalScore,
+          timeMultiplier: timeMultiplier,
+          answers: this.answers,
+          reason: reason
         });
       }
 
-      renderTop10() {
-        const top10 = this.state.getLeaderboard();
-        const container = document.getElementById('top10Leaderboard');
-        container.innerHTML = '';
+      showResults(data) {
+        document.getElementById('quizContainer').classList.add('hidden');
+        document.getElementById('resultsContainer').classList.remove('hidden');
         
-        top10.forEach((player, index) => {
-          const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}º`;
-          const div = document.createElement('div');
-          div.className = `glass p-4 rounded-xl flex items-center justify-between ${index < 3 ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-l-4 border-yellow-400' : ''}`;
-          div.innerHTML = `
-            <div class="flex items-center gap-3">
-              <span class="text-2xl font-bold">${medal}</span>
-              <span class="font-bold">${player.name}</span>
+        document.getElementById('finalScoreDisplay').textContent = `${data.score}`;
+        document.getElementById('totalQuestionsFinal').textContent = data.total;
+        document.getElementById('finalPercentage').textContent = `${data.percentage}%`;
+        document.getElementById('multiplierDisplay').textContent = `${data.timeMultiplier}x`;
+        
+        // Tempo impiegato
+        const timeUsed = 2700 - this.timer.remainingSeconds;
+        const minutes = Math.floor(timeUsed / 60);
+        const seconds = timeUsed % 60;
+        document.getElementById('timeUsedDisplay').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        // Review risposte
+        const reviewContainer = document.getElementById('answersReview');
+        reviewContainer.innerHTML = this.questions.map((q, idx) => {
+          const userAnswer = data.answers[idx];
+          const isCorrect = userAnswer === q.correct;
+          return `
+            <div class="glass p-4 rounded-xl flex items-start gap-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg ${isCorrect ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}">
+                ${isCorrect ? '✓' : '✗'}
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-slate-200 mb-1">Domanda ${idx + 1}</div>
+                <div class="text-sm text-slate-400 mb-2">${q.question.substring(0, 80)}...</div>
+                <div class="text-xs bg-slate-800 px-3 py-1 rounded-full inline-block ${isCorrect ? 'text-emerald-400' : 'text-red-400'}">
+                  ${isCorrect ? 'Corretto' : 'Errato'}
+                </div>
+              </div>
             </div>
-            <span class="font-mono font-bold text-xl">${player.score.toFixed(2)}pt</span>
           `;
-          container.appendChild(div);
-        });
-      }
-
-      newQuiz() {
-        this.state.resetForNewQuiz();
-        this.state.generateQuestions();
-        document.getElementById('resultsScreen').classList.add('hidden');
-        this.showQuizScreen();
-      }
-
-      showHome() {
-        document.getElementById('quizScreen').classList.add('hidden');
-        document.getElementById('resultsScreen').classList.add('hidden');
-        document.getElementById('homeScreen').classList.remove('hidden');
-        localStorage.removeItem('quizState');
-        location.reload();
-      }
-
-      async exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFontSize(20);
-        doc.text('Quiz D.Lgs. 81/2008 - Risultati', 20, 30);
-        doc.setFontSize(12);
-        doc.text(`${this.state.userName} - Punteggio: ${this.state.score.toFixed(2)}pt`, 20, 45);
-        doc.text(`Posizione: #${this.state.getPosition()}`, 20, 55);
-        
-        // Converti leaderboard in canvas e aggiungi
-        const leaderboard = document.getElementById('top10Leaderboard').cloneNode(true);
-        leaderboard.style.background = 'white';
-        leaderboard.style.color = 'black';
-        const canvas = await html2canvas(leaderboard);
-        doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, 70, 170, 100);
-        
-        doc.save(`quiz-risultati-${this.state.userName}-${Date.now()}.pdf`);
+        }).join('');
       }
     }
 
-    // ================================
-    // INIT
-    // ================================
+    // ========== INIT ==========
+    let quizManager;
+
     document.addEventListener('DOMContentLoaded', () => {
-      // Controlla se è mezzanotte e resetta classifica
-      const now = new Date();
-      if (now.getHours() === 0 && now.getMinutes() === 0) {
-        localStorage.removeItem('leaderboard');
-      }
+      document.getElementById('startQuizBtn').addEventListener('click', () => {
+        document.querySelector('header').classList.add('hidden');
+        document.getElementById('quizContainer').classList.remove('hidden');
+        document.getElementById('timerContainer').classList.remove('hidden');
+        
+        quizManager = new QuizManager(questions);
+        quizManager.init();
+      });
 
-      const state = new QuizState();
-      new QuizUI(state);
-
-      // PWA Service Worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(URL.createObjectURL(new Blob([`          self.addEventListener('install', e => self.skipWaiting());
-          self.addEventListener('activate', e => self.clients.claim());
-          self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
-        `], {type: 'application/javascript'})));
-      }
+      // Modal handlers
+      document.getElementById('closeTerms').addEventListener('click', () => {
+        document.getElementById('termsModal').classList.add('hidden');
+      });
     });
+
+    // Global access
+    window.quizManager = quizManager;
   </script>
 </body>
 </html>
