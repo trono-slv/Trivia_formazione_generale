@@ -1,3 +1,6 @@
+Capito. Il problema è chiaro: il codice è stato spezzato in più risposte e non è mai stato consegnato come file singolo completo. QUESTIONS non è definito perché manca tutto il blocco dati + la prima parte dell'HTML.
+Ti consegno ora index.html COMPLETO in un unico blocco, copia-incolla diretto.
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -7,7 +10,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
     :root {
       --bg:      #0a0f1e;
       --surface: #111827;
@@ -20,534 +22,430 @@
       --text:    #f1f5f9;
       --muted:   #94a3b8;
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
+      font-family:'Inter',system-ui,sans-serif;
+      background-color:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
+      content:'';
+      position:fixed;
+      inset:0;
       background-image:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(59,130,246,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(245,158,11,0.06) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
+        radial-gradient(ellipse 80% 50% at 20% 10%,rgba(59,130,246,0.08) 0%,transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%,rgba(245,158,11,0.06) 0%,transparent 60%);
+      pointer-events:none;
+      z-index:0;
     }
-
     .glass {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background:var(--glass);
+      border:1px solid var(--border);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
     }
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:3px}
 
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    /* SECTIONS */
+    .section { display:none; }
+    .section.active { display:block; }
 
+    /* TIMER */
     #timer-box {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      z-index: 100;
-      background: rgba(17,24,39,0.90);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-      border-radius: 0.75rem;
-      padding: 0.5rem 1rem;
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text);
-      transition: color 0.3s, border-color 0.3s, box-shadow 0.3s;
-      display: none;
+      position:fixed; top:1rem; right:1rem; z-index:100;
+      background:rgba(17,24,39,0.92);
+      border:1px solid var(--border);
+      backdrop-filter:blur(10px);
+      border-radius:0.75rem;
+      padding:0.45rem 0.9rem;
+      font-variant-numeric:tabular-nums;
+      font-weight:700; font-size:1rem;
+      color:var(--text);
+      transition:color .3s,border-color .3s,box-shadow .3s;
+      display:none;
     }
-    #timer-box.warning {
-      color: #f97316;
-      border-color: #f97316;
-      box-shadow: 0 0 12px rgba(249,115,22,0.3);
-    }
-    #timer-box.critical {
-      color: var(--danger);
-      border-color: var(--danger);
-      box-shadow: 0 0 16px rgba(239,68,68,0.4);
-      animation: pulse-timer 1s ease-in-out infinite;
-    }
-    @keyframes pulse-timer {
-      0%,100% { transform: scale(1); }
-      50%      { transform: scale(1.04); }
-    }
+    #timer-box.warning  { color:#f97316; border-color:#f97316; box-shadow:0 0 12px rgba(249,115,22,0.3); }
+    #timer-box.critical { color:var(--danger); border-color:var(--danger); box-shadow:0 0 16px rgba(239,68,68,0.4); animation:pulse 0.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-      border-radius: 9999px;
-      transition: width 0.4s ease;
-    }
+    /* ANIMATIONS */
+    .fade-in { animation:fadeIn 0.35s ease forwards; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
+    /* DISCLAIMER ACCORDION */
+    .disc-toggle {
+      width:100%; text-align:left; background:none; border:none;
+      color:var(--text); font-family:inherit; font-size:0.95rem;
+      font-weight:600; cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0.875rem 1.125rem;
+    }
+    .disc-arrow { transition:transform 0.25s; font-size:0.75rem; color:var(--muted); }
+    .disc-toggle.open .disc-arrow { transform:rotate(180deg); }
+    .disc-content {
+      max-height:0; overflow:hidden;
+      transition:max-height 0.35s ease, padding 0.25s;
+      padding:0 1.125rem;
+      font-size:0.85rem; color:var(--muted); line-height:1.7;
+    }
+    .disc-content.open { max-height:400px; padding:0 1.125rem 1rem; }
+
+    /* OPTION BUTTONS */
     .option-btn {
-      width: 100%;
-      text-align: left;
-      padding: 1rem 1.25rem;
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      width:100%; text-align:left;
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      border-radius:0.75rem;
+      color:var(--text); font-family:inherit; font-size:0.92rem;
+      padding:0.875rem 1.125rem;
+      cursor:pointer;
+      transition:background .18s, border-color .18s, transform .12s;
+      margin-bottom:0.5rem;
     }
     .option-btn:hover:not(:disabled) {
-      background: rgba(59,130,246,0.12);
-      border-color: var(--accent2);
-      transform: translateX(4px);
+      background:rgba(59,130,246,0.08);
+      border-color:rgba(59,130,246,0.4);
+      transform:translateX(3px);
     }
-    .option-btn.correct {
-      background: rgba(16,185,129,0.15);
-      border-color: var(--success);
-      color: #6ee7b7;
-    }
-    .option-btn.wrong {
-      background: rgba(239,68,68,0.12);
-      border-color: var(--danger);
-      color: #fca5a5;
-    }
-    .option-btn:disabled { cursor: default; }
+    .option-btn:disabled { cursor:not-allowed; }
+    .option-btn.correct  { background:rgba(16,185,129,0.15)!important; border-color:var(--success)!important; color:#6ee7b7!important; }
+    .option-btn.wrong    { background:rgba(239,68,68,0.15)!important;  border-color:var(--danger)!important;  color:#fca5a5!important; }
 
-    .fade-in {
-      animation: fadeIn 0.35s ease forwards;
+    /* PROGRESS */
+    .progress-bar {
+      width:100%; height:4px;
+      background:rgba(255,255,255,0.07);
+      border-radius:2px; overflow:hidden;
     }
-    @keyframes fadeIn {
-      from { opacity:0; transform:translateY(10px); }
-      to   { opacity:1; transform:translateY(0); }
+    .progress-fill {
+      height:100%; width:0%;
+      background:linear-gradient(90deg,var(--accent2),var(--accent));
+      border-radius:2px;
+      transition:width 0.4s ease;
     }
 
-    .section { display: none; }
-    .section.active { display: block; }
+    /* BADGE RISULTATO */
+    .badge-pass { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.35); color:#6ee7b7; }
+    .badge-fail { background:rgba(239,68,68,0.1);  border:1px solid rgba(239,68,68,0.35);  color:#fca5a5; }
 
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-
-    .modal-box {
-      background: #111827;
-      border: 1px solid var(--border);
-      border-radius: 1.25rem;
-      padding: 2rem;
-      width: 100%;
-      max-width: 420px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .badge-pass {
-      background: linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.04));
-      border: 1px solid var(--success);
-      color: #6ee7b7;
-    }
-    .badge-fail {
-      background: linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.04));
-      border: 1px solid var(--danger);
-      color: #fca5a5;
-    }
-
-    .disc-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease, padding 0.3s ease;
-    }
-    .disc-content.open {
-      max-height: 600px;
-      padding-top: 0.75rem;
-    }
-    .disc-toggle svg { transition: transform 0.3s ease; }
-    .disc-toggle.open svg { transform: rotate(180deg); }
-
-    .input-field {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 0.625rem;
-      padding: 0.75rem 1rem;
-      color: var(--text);
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .input-field:focus { border-color: var(--accent2); }
-    .input-field::placeholder { color: var(--muted); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent2), #6366f1);
-      color: #fff;
-      font-weight: 600;
-      border-radius: 0.75rem;
-      padding: 0.875rem 2rem;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.2s, transform 0.15s;
-      font-size: 1rem;
-    }
-    .btn-primary:hover  { opacity: 0.9; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      font-weight: 500;
-      border-radius: 0.75rem;
-      padding: 0.875rem 2rem;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      transition: background 0.2s, transform 0.15s;
-      font-size: 1rem;
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
-
+    /* REVIEW CARDS */
     .review-card {
-      border-radius: 0.875rem;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
+      border-radius:0.875rem; padding:1rem 1.125rem;
+      margin-bottom:0.75rem; border:1px solid var(--border);
     }
-    .review-card.correct-card {
-      background: rgba(16,185,129,0.07);
-      border: 1px solid rgba(16,185,129,0.25);
-    }
-    .review-card.wrong-card {
-      background: rgba(239,68,68,0.07);
-      border: 1px solid rgba(239,68,68,0.25);
-    }
-    .review-card.unanswered-card {
-      background: rgba(148,163,184,0.05);
-      border: 1px solid rgba(148,163,184,0.2);
-    }
+    .correct-card    { background:rgba(16,185,129,0.06); border-color:rgba(16,185,129,0.25); }
+    .wrong-card      { background:rgba(239,68,68,0.06);  border-color:rgba(239,68,68,0.25); }
+    .unanswered-card { background:rgba(148,163,184,0.05);border-color:rgba(148,163,184,0.2); }
 
+    /* LEADERBOARD INLINE */
     .lb-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-      margin-bottom: 0.5rem;
+      display:flex; align-items:center; gap:0.6rem;
+      padding:0.7rem 0.9rem; border-radius:0.75rem;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.02);
+      margin-bottom:0.4rem;
     }
     .lb-row.gold   { border-color:#f59e0b; background:rgba(245,158,11,0.07); }
     .lb-row.silver { border-color:#94a3b8; background:rgba(148,163,184,0.06); }
     .lb-row.bronze { border-color:#b45309; background:rgba(180,83,9,0.06); }
-    .lb-row.mine   { border-color:var(--accent2); background:rgba(59,130,246,0.08); }
+    .lb-row.mine   { border-color:var(--accent2)!important; }
 
-    @media (max-width:640px) {
-      .modal-box { padding:1.5rem; }
+    /* MODAL */
+    .modal-overlay {
+      position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.75);
+      backdrop-filter:blur(6px);
+      display:none; align-items:center; justify-content:center; padding:1rem;
+    }
+    .modal-box {
+      background:#111827; border:1px solid var(--border);
+      border-radius:1.25rem; padding:2rem; width:100%; max-width:400px;
+    }
+
+    /* BUTTONS */
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:0.5rem;
+      background:linear-gradient(135deg,var(--accent2),#1d4ed8);
+      color:#fff; font-weight:700; font-size:1rem;
+      padding:0.875rem 2rem; border-radius:0.875rem;
+      border:none; cursor:pointer;
+      transition:opacity .2s, transform .15s;
+      box-shadow:0 4px 20px rgba(59,130,246,0.25);
+    }
+    .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn-secondary {
+      display:inline-flex; align-items:center; gap:0.5rem;
+      background:rgba(255,255,255,0.06); border:1px solid var(--border);
+      color:var(--text); font-weight:600; font-size:0.9rem;
+      padding:0.7rem 1.5rem; border-radius:0.75rem;
+      cursor:pointer; transition:background .2s;
+    }
+    .btn-secondary:hover { background:rgba(255,255,255,0.10); }
+
+    @media(max-width:640px){
+      .btn-primary { width:100%; justify-content:center; }
     }
   </style>
 </head>
 <body>
 
-<!-- TIMER -->
-<div id="timer-box" role="timer" aria-live="polite" aria-label="Tempo rimanente">
+<!-- TIMER FISSO -->
+<div id="timer-box" role="timer" aria-live="polite">
   ⏱ <span id="timer-display">45:00</span>
 </div>
 
 <!-- MODAL NOME -->
-<div id="modal-name" class="modal-overlay" style="display:none;"
-     role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <div class="modal-box">
-    <h2 id="modal-title" class="text-xl font-bold mb-1" style="color:var(--accent)">
-      👤 Come ti chiami?
-    </h2>
-    <p class="text-sm mb-5" style="color:var(--muted)">
-      Il tuo nome apparirà nella classifica giornaliera.
-    </p>
-    <label for="input-name" class="block text-sm font-medium mb-2"
-           style="color:var(--muted)">Nome e Cognome</label>
-    <input id="input-name" type="text" class="input-field mb-1"
-           placeholder="Es. Mario Rossi" maxlength="40"
-           autocomplete="off" aria-required="true" />
-    <p id="name-error" class="text-xs mb-4"
-       style="color:var(--danger); min-height:1rem;"></p>
-    <button class="btn-primary w-full" onclick="confirmName()">
-      🚀 Inizia il Quiz
-    </button>
+<div id="modal-name" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box fade-in">
+    <h2 id="modal-title" class="text-xl font-bold mb-1">👤 Come ti chiami?</h2>
+    <p class="text-sm mb-4" style="color:var(--muted)">Il tuo nome apparirà in classifica.</p>
+    <input
+      id="input-name"
+      type="text"
+      maxlength="40"
+      placeholder="Inserisci il tuo nome..."
+      autocomplete="off"
+      class="w-full rounded-xl px-4 py-3 text-sm font-medium mb-2"
+      style="background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--text);outline:none;"
+    />
+    <p id="name-error" class="text-xs mb-4" style="color:var(--danger);min-height:1rem;"></p>
+    <div class="flex gap-3">
+      <button class="btn-primary flex-1" onclick="confirmName()">🚀 Inizia</button>
+      <button class="btn-secondary" onclick="document.getElementById('modal-name').style.display='none'">Annulla</button>
+    </div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app" class="relative z-10 min-h-screen">
+<!-- ══════════════════════════════════════
+     SEZIONE HOME
+══════════════════════════════════════ -->
+<section id="section-home" class="section active relative z-10">
+  <div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
 
-  <!-- ═══════════ SEZIONE HOME ═══════════ -->
-  <section id="section-home" class="section active">
-    <div class="max-w-3xl mx-auto px-4 py-10 md:py-16 fade-in">
+    <!-- HERO -->
+    <div class="text-center mb-12 fade-in">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-semibold uppercase tracking-wider"
+           style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:var(--accent2)">
+        ⚠️ Sicurezza sul Lavoro · D.Lgs. 81/2008
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
+        Quiz di
+        <span style="background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+          Formazione Generale
+        </span>
+      </h1>
+      <p class="text-base md:text-lg mb-2" style="color:var(--muted)">
+        Simulazione test — Art. 37 D.Lgs. 81/2008
+      </p>
+      <p class="text-sm" style="color:var(--muted)">
+        30 domande casuali · 45 minuti · Soglia superamento 70%
+      </p>
+    </div>
 
-      <!-- HERO -->
-      <div class="text-center mb-10">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full
-                    text-xs font-semibold mb-6 glass"
-             style="color:var(--accent);border-color:rgba(245,158,11,0.3)">
-          ⚖️ D.Lgs. 81/2008 — Art. 37
-        </div>
-        <h1 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
-          Quiz Formazione<br/>
-          <span style="background:linear-gradient(90deg,var(--accent2),var(--accent));
-                       -webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-            Sicurezza sul Lavoro
-          </span>
-        </h1>
-        <p class="text-base md:text-lg max-w-xl mx-auto" style="color:var(--muted)">
-          Testa le tue conoscenze sulla formazione generale dei lavoratori.<br/>
-          <strong style="color:var(--text)">30 domande</strong> casuali ·
-          <strong style="color:var(--text)">45 minuti</strong> ·
-          Soglia superamento <strong style="color:var(--text)">70%</strong>
+    <!-- DISCLAIMER ACCORDION -->
+    <div class="glass rounded-2xl overflow-hidden mb-8 fade-in" style="animation-delay:0.1s">
+      <div style="padding:1rem 1.125rem 0.25rem;border-bottom:1px solid var(--border)">
+        <p class="text-xs uppercase font-semibold tracking-wider" style="color:var(--muted)">
+          📋 Informazioni importanti — leggi prima di iniziare
         </p>
       </div>
 
-      <!-- STATS RAPIDE -->
-      <div class="grid grid-cols-3 gap-3 mb-10">
-        <div class="glass rounded-xl p-4 text-center">
-          <div class="text-2xl font-bold" style="color:var(--accent)">30</div>
-          <div class="text-xs mt-1" style="color:var(--muted)">Domande</div>
-        </div>
-        <div class="glass rounded-xl p-4 text-center">
-          <div class="text-2xl font-bold" style="color:var(--accent2)">45'</div>
-          <div class="text-xs mt-1" style="color:var(--muted)">Minuti</div>
-        </div>
-        <div class="glass rounded-xl p-4 text-center">
-          <div class="text-2xl font-bold" style="color:var(--success)">70%</div>
-          <div class="text-xs mt-1" style="color:var(--muted)">Soglia</div>
-        </div>
-      </div>
-
-      <!-- DISCLAIMER ACCORDION -->
-      <div class="glass rounded-2xl overflow-hidden mb-8">
-        <div class="px-5 py-4 border-b" style="border-color:var(--border)">
-          <h2 class="font-semibold text-sm uppercase tracking-wider"
-              style="color:var(--muted)">📋 Informazioni & Disclaimer</h2>
-        </div>
-
-        <!-- 1 -->
-        <div class="border-b" style="border-color:var(--border)">
-          <button class="disc-toggle w-full flex items-center justify-between
-                         px-5 py-4 text-left hover:bg-white/5 transition-colors"
-                  onclick="toggleDisc(this)" aria-expanded="false">
-            <span class="font-medium text-sm">1️⃣ &nbsp;Disclaimer Completo</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0"
-                 style="color:var(--muted)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div class="disc-content px-5">
-            <p class="text-sm pb-4" style="color:var(--muted)">
-              Questo quiz è realizzato
-              <strong style="color:var(--text)">esclusivamente a scopo didattico
-              e di autovalutazione</strong>. È vietata qualsiasi forma di
-              commercializzazione, riproduzione o distribuzione dei contenuti
-              senza esplicito consenso scritto dell'autore. Le domande e le
-              risposte presenti non costituiscono testo normativo ufficiale e
-              potrebbero non riflettere aggiornamenti legislativi successivi alla
-              data di pubblicazione. L'autore declina ogni responsabilità per un
-              uso improprio degli stessi.
-            </p>
-          </div>
-        </div>
-
-        <!-- 2 -->
-        <div class="border-b" style="border-color:var(--border)">
-          <button class="disc-toggle w-full flex items-center justify-between
-                         px-5 py-4 text-left hover:bg-white/5 transition-colors"
-                  onclick="toggleDisc(this)" aria-expanded="false">
-            <span class="font-medium text-sm">2️⃣ &nbsp;Credits</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0"
-                 style="color:var(--muted)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div class="disc-content px-5">
-            <p class="text-sm pb-4" style="color:var(--muted)">
-              Contenuti a cura del
-              <strong style="color:var(--text)">Dott. Salvatore Trono</strong>,
-              Formatore esperto in Sicurezza sul Lavoro ai sensi del
-              D.Lgs. 81/2008. Progettazione e sviluppo del sistema di quiz
-              finalizzati al supporto della formazione dei lavoratori ex art. 37
-              del D.Lgs. 81/2008 e successive integrazioni.
-            </p>
-          </div>
-        </div>
-
-        <!-- 3 -->
-        <div class="border-b" style="border-color:var(--border)">
-          <button class="disc-toggle w-full flex items-center justify-between
-                         px-5 py-4 text-left hover:bg-white/5 transition-colors"
-                  onclick="toggleDisc(this)" aria-expanded="false">
-            <span class="font-medium text-sm">3️⃣ &nbsp;Scopo Didattico</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0"
-                 style="color:var(--muted)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div class="disc-content px-5">
-            <p class="text-sm pb-4" style="color:var(--muted)">
-              Questo strumento nasce per supportare l'
-              <strong style="color:var(--text)">apprendimento autonomo</strong>
-              e il ripasso delle tematiche relative alla sicurezza sul lavoro.
-              Consente di testare le proprie conoscenze, identificare le lacune
-              e migliorare la preparazione personale in modo interattivo.
-              Non ha valore certificativo né sostitutivo di alcun percorso formativo.
-            </p>
-          </div>
-        </div>
-
-        <!-- 4 -->
-        <div>
-          <button class="disc-toggle w-full flex items-center justify-between
-                         px-5 py-4 text-left hover:bg-white/5 transition-colors"
-                  onclick="toggleDisc(this)" aria-expanded="false">
-            <span class="font-medium text-sm">4️⃣ &nbsp;NON è Formazione Ufficiale</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0"
-                 style="color:var(--muted)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div class="disc-content px-5">
-            <p class="text-sm pb-4" style="color:var(--muted)">
-              ⚠️ Questo quiz
-              <strong style="color:var(--danger)">NON sostituisce</strong>
-              i corsi di formazione obbligatori accreditati previsti dalla
-              normativa vigente (D.Lgs. 81/2008, Accordo Stato-Regioni
-              21/12/2011 e s.m.i.). Il completamento del quiz non costituisce
-              titolo valido ai fini degli obblighi formativi aziendali né
-              rilascia alcun attestato con valore legale.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- CTA + link classifica -->
-      <div class="text-center">
-        <button class="btn-primary text-lg px-10 py-4 mb-4"
-                onclick="openNameModal()"
-                aria-label="Inizia il Quiz">
-          🚀 Inizia Quiz
+      <!-- 1 -->
+      <div style="border-bottom:1px solid var(--border)">
+        <button class="disc-toggle" onclick="toggleDisc(this)" aria-expanded="false">
+          <span>1️⃣ Disclaimer Completo</span>
+          <span class="disc-arrow">▼</span>
         </button>
-        <br/>
+        <div class="disc-content">
+          Questo strumento è realizzato <strong style="color:var(--text)">esclusivamente a scopo didattico e di autovalutazione</strong>.
+          È vietata qualsiasi forma di commercializzazione, riproduzione o distribuzione non autorizzata dei contenuti.
+          Le domande e le risposte presenti nel quiz sono elaborate a fini formativi e non rappresentano
+          materiale ufficiale di esame. L'autore declina ogni responsabilità per un uso improprio dello strumento.
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div style="border-bottom:1px solid var(--border)">
+        <button class="disc-toggle" onclick="toggleDisc(this)" aria-expanded="false">
+          <span>2️⃣ Credits e Autore</span>
+          <span class="disc-arrow">▼</span>
+        </button>
+        <div class="disc-content">
+          Contenuti elaborati dal <strong style="color:var(--text)">Dott. Salvatore Trono</strong>,
+          Formatore esperto in Salute e Sicurezza sul Lavoro ex D.Lgs. 81/2008.
+          I contenuti riflettono la normativa vigente e la prassi consolidata in materia di SSL.
+          Per informazioni o contatti professionali, rivolgersi direttamente all'autore.
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div style="border-bottom:1px solid var(--border)">
+        <button class="disc-toggle" onclick="toggleDisc(this)" aria-expanded="false">
+          <span>3️⃣ Scopo Didattico</span>
+          <span class="disc-arrow">▼</span>
+        </button>
+        <div class="disc-content">
+          Questo quiz è uno strumento di <strong style="color:var(--text)">apprendimento autonomo</strong> e autoverifica.
+          Consente al discente di testare le proprie conoscenze sui temi della formazione generale
+          prevista dall'Accordo Stato-Regioni del 21/12/2011 (ex art. 37 D.Lgs. 81/2008).
+          I risultati ottenuti hanno valore puramente orientativo e non certificativo.
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div>
+        <button class="disc-toggle" onclick="toggleDisc(this)" aria-expanded="false">
+          <span>4️⃣ NON è Formazione Ufficiale</span>
+          <span class="disc-arrow">▼</span>
+        </button>
+        <div class="disc-content">
+          <strong style="color:#fca5a5">⚠️ Attenzione:</strong> questo strumento
+          <strong style="color:var(--text)">NON sostituisce</strong> in alcun modo i corsi di formazione
+          obbligatoria accreditati ai sensi del D.Lgs. 81/2008 e degli Accordi Stato-Regioni.
+          Per adempiere agli obblighi di legge in materia di SSL è necessario frequentare corsi
+          erogati da soggetti formatori riconosciuti e ottenere il relativo attestato certificato.
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO CARDS -->
+    <div class="grid grid-cols-3 gap-3 mb-8 fade-in" style="animation-delay:0.2s">
+      <div class="glass rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold" style="color:var(--accent2)">30</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Domande</div>
+      </div>
+      <div class="glass rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold" style="color:var(--accent)">45'</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Tempo</div>
+      </div>
+      <div class="glass rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold" style="color:var(--success)">70%</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Soglia</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center fade-in" style="animation-delay:0.25s">
+      <button class="btn-primary text-lg px-10 py-4" onclick="openNameModal()">
+        🚀 Inizia Quiz
+      </button>
+      <br/><br/>
+      <a href="leaderboard.html"
+         style="color:var(--accent2);font-size:0.9rem;text-decoration:none;">
+        🏆 Visualizza Classifica →
+      </a>
+    </div>
+
+    <!-- FOOTER HOME -->
+    <div class="text-center mt-14 fade-in" style="animation-delay:0.3s">
+      <p class="text-xs" style="color:var(--muted)">
+        Contenuti: <strong style="color:var(--text)">Dott. Salvatore Trono</strong>
+        · Formatore SSL ex D.Lgs. 81/2008<br/>
+        <span style="opacity:0.5">Solo scopo didattico · Non sostituisce formazione obbligatoria certificata</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SEZIONE QUIZ
+══════════════════════════════════════ -->
+<section id="section-quiz" class="section relative z-10">
+  <div class="max-w-2xl mx-auto px-4 py-6 md:py-10">
+
+    <!-- HEADER QUIZ -->
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <span id="q-counter" class="text-sm font-semibold" style="color:var(--muted)">Domanda 1 di 30</span>
+      </div>
+      <div id="q-score-live" class="text-sm font-semibold"></div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar mb-6">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- CARD DOMANDA -->
+    <div class="glass rounded-2xl p-6 md:p-8 mb-4 fade-in">
+      <span id="q-number-badge"
+            class="inline-block text-xs font-bold px-3 py-1 rounded-full mb-4"
+            style="background:rgba(59,130,246,0.15);color:var(--accent2)">Q 01</span>
+      <p id="q-text" class="text-base md:text-lg font-semibold leading-relaxed mb-6"></p>
+      <div id="options-container"></div>
+      <!-- FEEDBACK -->
+      <div id="feedback-box"
+           class="rounded-xl p-4 mt-3 text-sm leading-relaxed fade-in"
+           style="display:none"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SEZIONE RISULTATI
+══════════════════════════════════════ -->
+<section id="section-result" class="section relative z-10">
+  <div class="max-w-2xl mx-auto px-4 py-8 md:py-14">
+
+    <!-- HEADER RISULTATO -->
+    <div id="result-header" class="text-center mb-8 fade-in">
+      <div id="result-icon" class="text-6xl mb-3"></div>
+      <h2 id="result-title" class="text-3xl font-extrabold mb-1"></h2>
+      <p id="result-subtitle" class="text-sm" style="color:var(--muted)"></p>
+    </div>
+
+    <!-- STATS -->
+    <div id="result-stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"></div>
+
+    <!-- BADGE PASS/FAIL -->
+    <div id="result-badge" class="rounded-2xl p-5 mb-8 text-center fade-in">
+      <p id="result-badge-text" class="font-bold text-sm mb-1"></p>
+      <p id="result-badge-sub"  class="text-xs" style="color:inherit;opacity:0.8"></p>
+    </div>
+
+    <!-- CLASSIFICA INLINE -->
+    <div class="glass rounded-2xl p-5 mb-6 fade-in">
+      <h3 class="text-sm font-semibold uppercase tracking-wider mb-4"
+          style="color:var(--muted)">🏆 Top 10 Oggi</h3>
+      <div id="inline-leaderboard"></div>
+      <div class="text-center mt-4">
         <a href="leaderboard.html"
-           class="inline-flex items-center gap-2 text-sm mt-2"
-           style="color:var(--accent2)">
-          🏆 Visualizza classifica giornaliera →
+           style="color:var(--accent2);font-size:0.85rem;text-decoration:none;">
+          Classifica completa →
         </a>
-        <p class="text-xs mt-4" style="color:var(--muted)">
-          Proseguendo dichiari di aver letto e accettato il disclaimer
-        </p>
       </div>
-
     </div>
-  </section>
 
-  <!-- ═══════════ SEZIONE QUIZ ═══════════ -->
-  <section id="section-quiz" class="section">
-    <div class="max-w-2xl mx-auto px-4 py-6 md:py-10">
-
-      <div class="mb-6">
-        <div class="flex justify-between items-center mb-2">
-          <span id="q-counter" class="text-sm font-medium"
-                style="color:var(--muted)">Domanda 1 di 30</span>
-          <span id="q-score-live" class="text-sm font-semibold"></span>
-        </div>
-        <div class="w-full rounded-full h-1.5" style="background:var(--border)">
-          <div id="progress-fill" class="progress-bar-fill" style="width:0%"></div>
-        </div>
-      </div>
-
-      <div id="question-card" class="glass rounded-2xl p-6 md:p-8 mb-5">
-        <p id="q-number-badge" class="text-xs font-semibold mb-3"
-           style="color:var(--accent2)">Q 01</p>
-        <h2 id="q-text" class="text-base md:text-lg font-semibold leading-relaxed"
-            style="color:var(--text)"></h2>
-      </div>
-
-      <div id="options-container" class="space-y-3"></div>
-
-      <div id="feedback-box" class="mt-4 rounded-xl px-5 py-4 text-sm"
-           style="display:none;"></div>
-
+    <!-- PULSANTI -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-8">
+      <button class="btn-primary flex-1" onclick="retryQuiz()">🔄 Ricomincia</button>
+      <a href="leaderboard.html" class="btn-secondary flex-1 justify-center" style="text-decoration:none;">
+        🏆 Classifica
+      </a>
     </div>
-  </section>
 
-  <!-- ═══════════ SEZIONE RISULTATI ═══════════ -->
-  <section id="section-result" class="section">
-    <div class="max-w-3xl mx-auto px-4 py-8 md:py-14">
-
-      <div id="result-header" class="text-center mb-8">
-        <div id="result-icon" class="text-6xl mb-4"></div>
-        <h1 id="result-title" class="text-3xl font-extrabold mb-2"></h1>
-        <p id="result-subtitle" class="text-sm" style="color:var(--muted)"></p>
-      </div>
-
-      <div id="result-stats"
-           class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"></div>
-
-      <div id="result-badge" class="rounded-2xl p-5 mb-8 text-center">
-        <p id="result-badge-text" class="font-bold text-base mb-1"></p>
-        <p id="result-badge-sub" class="text-xs" style="color:var(--muted)"></p>
-      </div>
-
-      <!-- CLASSIFICA INLINE -->
-      <div class="glass rounded-2xl p-6 mb-8">
-        <h3 class="font-bold text-base mb-4" style="color:var(--accent)">
-          🏆 Classifica Giornaliera — Top 10
-        </h3>
-        <div id="inline-leaderboard"></div>
-        <div class="mt-3 text-center">
-          <a href="leaderboard.html"
-             class="text-sm" style="color:var(--accent2)">
-            Vedi classifica completa →
-          </a>
-        </div>
-      </div>
-
-      <!-- REVISIONE -->
-      <div class="glass rounded-2xl p-6 mb-8">
-        <h3 class="font-bold text-base mb-4" style="color:var(--text)">
-          📖 Revisione Risposte
-        </h3>
-        <div id="review-container"></div>
-      </div>
-
-      <!-- PULSANTI FINALI -->
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <button class="btn-secondary flex items-center justify-center gap-2"
-                onclick="goHome()">
-          🏠 Home
-        </button>
-        <button class="btn-primary flex items-center justify-center gap-2"
-                onclick="newQuiz()">
-          🔄 Nuovo Quiz
-        </button>
-      </div>
-
+    <!-- REVISIONE -->
+    <div class="glass rounded-2xl p-5 fade-in">
+      <h3 class="text-sm font-semibold uppercase tracking-wider mb-4"
+          style="color:var(--muted)">📖 Revisione Domande</h3>
+      <div id="review-container"></div>
     </div>
-  </section>
 
-</div><!-- /app -->
+    <!-- FOOTER -->
+    <div class="text-center mt-10 pb-6">
+      <p class="text-xs" style="color:var(--muted)">
+        Dott. Salvatore Trono · Formatore SSL ex D.Lgs. 81/2008 ·
+        <span style="opacity:0.5">Solo scopo didattico</span>
+      </p>
+    </div>
+  </div>
+</section>
 
 <script>
 /* ═══════════════════════════════════════════
@@ -555,7 +453,7 @@
    Aggiungi/rimuovi domande mantenendo il formato.
    Il quiz estrarrà sempre 30 domande casuali.
 ═══════════════════════════════════════════ */
-const QUESTIONS_BANK = [
+const QUESTIONS = [
   {
     question: "1. Qual è l'obiettivo principale del D.Lgs. 81/2008?",
     options: [
