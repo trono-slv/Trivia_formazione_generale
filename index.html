@@ -1162,8 +1162,8 @@ function loadLeaderboard() {
   } catch { return { entries: [] }; }
 }
 
-function saveLeaderboard(l- {
-  localStorage.setItem('ssl_quiz_lb', JSON.stringify(l-);
+function saveLeaderboard(lb) {
+  localStorage.setItem('ssl_quiz_lb', JSON.stringify(lb));
 }
 
 function saveResult(entry) {
