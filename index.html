@@ -1424,7 +1424,7 @@ function endQuiz(timeout) {
   stopTimer();
 
   const elapsed   = Math.round((Date.now() - STATE.startTime) / 1000);
-  const timeStr   = formatTime(elapse-;
+  const timeStr = formatTime(elapsed);
   const correct   = STATE.answers.filter((a, i) => a !== null && a === STATE.questions[i].correct).length;
   const answered  = STATE.answers.filter(a => a !== null).length;
   const pct       = Math.round((correct / 30) * 100);
