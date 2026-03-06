@@ -1135,9 +1135,9 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-function showSection(i- {
+function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(i-.classList.add('active');
+  document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
