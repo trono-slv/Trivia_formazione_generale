@@ -1314,12 +1314,11 @@ function renderQuestion() {
   const container = document.getElementById('options-container');
   container.innerHTML = '';
 
-  // Se non ancora risposto: shuffle e salva ordine
-  if (STATE.answers[idx] === null) {
-    const indexed = q.options.map((opt, i) => ({ opt, i }));
-    const shuffled = shuffle(indexe-;
-    STATE.shuffleMap[idx] = shuffled.map(x => x.i);
-  }
+ if (STATE.answers[idx] === null) {
+  const indexed = q.options.map((opt, i) => ({ opt, i }));
+  const shuffled = shuffle(indexed);
+  STATE.shuffleMap[idx] = shuffled.map(x => x.i);
+}
 
   // Usa sempre l'ordine salvato in shuffleMap
   const displayOptions = STATE.shuffleMap[idx].map(i => ({ opt: q.options[i], i }));
