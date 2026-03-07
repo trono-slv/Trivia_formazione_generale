@@ -1396,7 +1396,7 @@ function renderQuestion() {
 
   showFeedback(q.explanation, optIdx === q.correct);
 
-  // Avanza automaticamente dopo 2.2s
+  // Avanza automaticamente dopo s
   setTimeout(() => {
     if (STATE.current < STATE.questions.length - 1) {
       STATE.current++;
@@ -1404,7 +1404,7 @@ function renderQuestion() {
     } else {
       endQuiz(false);
     }
-  }, 1000);
+  }, 800);
 }
 
 function showFeedback(text, isCorrect) {
