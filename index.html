@@ -1153,30 +1153,16 @@ function toggleDisc(btn) {
 /* ════════════════════════════════════════════════
    LEADERBOARD (localStorage)
    ════════════════════════════════════════════════ */
+const LB_KEY = 'ssl_quiz_lb';
+
 function getToday() {
   return new Date().toLocaleDateString('it-IT');
 }
 
 function loadLeaderboard() {
   try {
-    return JSON.parse(localStorage.getItem('ssl_quiz_lb') || '{"entries":[]}');
+    return JSON.parse(localStorage.getItem(LB_KEY)) || { entries: [] };
   } catch { return { entries: [] }; }
-}
-
-function Leaderboard(lb) {
-  localStorage.setItem('ssl_quiz_lb', JSON.stringify(lb));
-}
-
-function saveResult(entry) {
-  const lb = loadLeaderboard();
-  lb.entries.push(entry);
-  lb.entries.sort((a, b) => b.score - a.score);
-  saveLeaderboard(lb);
-}
-
-  function loadLeaderboard() {
-  try { return JSON.parse(localStorage.getItem(LB_KEY)) || { entries: [] }; }
-  catch { return { entries: [] }; }
 }
 
 function saveLeaderboard(lb) {
@@ -1190,7 +1176,6 @@ function saveResult(entry) {
   saveLeaderboard(lb);
 }
 
-
 function renderInlineLeaderboard(myScore) {
   const container = document.getElementById('inline-leaderboard');
   const lb        = loadLeaderboard();
@@ -1199,7 +1184,7 @@ function renderInlineLeaderboard(myScore) {
   const medals    = ['🥇', '🥈', '🥉'];
 
   if (entries.length === 0) {
-    container.innerHTML = '<p style="color:var(--mute-;font-size:0.85rem;text-align:center;">Nessun risultato oggi.</p>';
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;text-align:center;">Nessun risultato oggi.</p>';
     return;
   }
 
@@ -1208,14 +1193,14 @@ function renderInlineLeaderboard(myScore) {
     const cls    = i === 0 ? 'lb-row gold' : i === 1 ? 'lb-row silver' : i === 2 ? 'lb-row bronze' : 'lb-row';
     return `
       <div class="${cls}${isMine ? ' mine' : ''}">
-        <span style="width:1.5rem;flex-shrink:0;font-size:0.85rem;font-weight:700;color:var(--mute-">
+        <span style="width:1.5rem;flex-shrink:0;font-size:0.85rem;font-weight:700;color:var(--muted)">
           ${medals[i] || `#${i + 1}`}
         </span>
         <div style="flex:1;min-width:0">
           <p style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
             ${e.name}${isMine ? ' <span style="color:var(--accent2)">(tu)</span>' : ''}
           </p>
-          <p style="font-size:0.75rem;color:var(--mute-">${e.raw}/30 · ${e.time}</p>
+          <p style="font-size:0.75rem;color:var(--muted)">${e.raw}/30 · ${e.time}</p>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <p style="font-size:0.85rem;font-weight:700;color:var(--accent)">${e.score}pt</p>
@@ -1227,6 +1212,7 @@ function renderInlineLeaderboard(myScore) {
     `;
   }).join('');
 }
+
 
 /* ════════════════════════════════════════════════
    TIMER
