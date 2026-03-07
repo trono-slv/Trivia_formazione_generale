@@ -434,6 +434,7 @@
 </section>
 
 <script>
+  const LB_KEY = 'ssl_quiz_leaderboard_v1';
 /* ═══════════════════════════════════════════
    PANIERE DOMANDE
    Aggiungi/rimuovi domande mantenendo il formato.
@@ -1162,7 +1163,7 @@ function loadLeaderboard() {
   } catch { return { entries: [] }; }
 }
 
-function saveLeaderboard(lb) {
+function Leaderboard(lb) {
   localStorage.setItem('ssl_quiz_lb', JSON.stringify(lb));
 }
 
