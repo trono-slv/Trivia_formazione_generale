@@ -1382,22 +1382,19 @@ function showFeedback(text, isCorrect) {
 function endQuiz(timeout) {
   stopTimer();
 
-  console.log('=== END QUIZ DEBUG ===');
-  console.log('playerName:', STATE.playerName);
-  console.log('answers:', STATE.answers);
-  console.log('questions:', STATE.questions?.length);
-
-  const elapsed = Math.round((Date.now() - STATE.startTime) / 1000);
+  const elapsed   = Math.round((Date.now() - STATE.startTime) / 1000);
   const timeStr = formatTime(elapsed);
-  const correct = STATE.answers.filter((a, i) => a !== null && a === STATE.questions[i].correct).length;
-  const answered = STATE.answers.filter(a => a !== null).length;
-  const pct = Math.round((correct / 30) * 100);
-  const passed = pct >= 70;
+  const correct   = STATE.answers.filter((a, i) => a !== null && a === STATE.questions[i].correct).length;
+  const answered  = STATE.answers.filter(a => a !== null).length;
+  const pct       = Math.round((correct / 30) * 100);
+  const passed    = pct >= 70;
 
-  const mult = elapsed < 900 ? 1.5 : elapsed < 1800 ? 1.2 : 1.0;
-  const score = Math.round(correct * 10 * mult);
+  // Punteggio con moltiplicatore velocità
+  const mult      = elapsed < 900 ? 1.5 : elapsed < 1800 ? 1.2 : 1.0;
+  const score     = Math.round(correct * 10 * mult);
 
-  const entry = {
+  // Salva in leaderboard
+  saveResult({
     name:   STATE.playerName,
     score,
     raw:    correct,
@@ -1406,11 +1403,10 @@ function endQuiz(timeout) {
     mult,
     passed,
     date:   getToday()
-  };
+  });
 
-  console.log('entry da salvare:', entry);
-  saveResult(entry);
-  console.log('leaderboard dopo salvataggio:', loadLeaderboard());
+  showSection('section-result');
+  renderResult({ correct, answered, pct, passed, score, timeStr, mult, timeout });
 }
 
 
